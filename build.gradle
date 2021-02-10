@@ -37,11 +37,30 @@ tasks.withType(JavaCompile) {
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 
-// These settings allow you to choose what version of Java you want to be compatible with. Forge 1.7.10 runs on Java 6 to 8.
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
 apply plugin: 'forge'
+
+// To use Java toolchains, sourceCompatibility & targetCompatibility need to be not set.
+// ForgeGradle sets these previously to build some Forge internals, as it targets Gradle 4.X and above.
+// This workaround sets them back to null. As this is a hack, any issues caused by this are my fault.
+sourceCompatibility = null
+targetCompatibility = null
+
+// Defines a Java 6 compatible JDK.
+def compiler = javaToolchains.compilerFor {
+    languageVersion = JavaLanguageVersion.of(6)
+}
+
+// Tells Gradle to use the previously defined Java 6 compatible JDK.
+java {
+    toolchain {
+        compiler
+    }
+}
+
+// Tells Gradle to always compile with the previously defined Java 6 compatible JDK.
+tasks.withType(JavaCompile).configureEach {
+    javaCompiler = compiler
+}
 
 version = project.version
 group = project.group
