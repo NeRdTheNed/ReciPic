@@ -1,0 +1,12 @@
+[
+    {
+        "authorList": [ "NeRd" ],
+        "description": "TODO",
+        "logoFile": "recipic.png",
+        "mcversion": "${mcversion}",
+        "modid": "recipic",
+        "name": "ReciPic",
+        "url": "https://github.com/NeRdTheNed/ReciPic",
+        "version": "${version}"
+    }
+]

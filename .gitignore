@@ -1,0 +1,23 @@
+# forge / gradle
+.gradle
+build/
+classes/
+out/
+run/
+
+# IDE generated files
+.classpath
+.idea/
+.project
+.settings
+.settings/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.launch
+bin/
+eclipse
+
+# mac os
+.DS_Store
