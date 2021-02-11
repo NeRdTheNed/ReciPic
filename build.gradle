@@ -62,8 +62,8 @@ tasks.withType(JavaCompile).configureEach {
     javaCompiler = compiler
 }
 
-version = project.version
-group = project.group
+version = project.mod_version
+group = project.mod_group
 
 def modName = project.mod_name
 def build_release = System.getenv("BUILD_RELEASE") == "true"

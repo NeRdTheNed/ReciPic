@@ -1,0 +1,9 @@
+# Item names
+item.ReciPic.WildcardItem.name=?
+
+# Config tooltips
+ReciPic.displaySingleOreDictEntries.tooltip=Show "Any type of (item)" on OreDictionary item groups with only a single entry.
+ReciPic.displaySingleOreDictEntries=Show single OreDictionary entries.
+
+# GUI buttons
+ReciPic.config.makeRecipeImages=Generate recipe images

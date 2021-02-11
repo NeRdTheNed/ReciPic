@@ -2,9 +2,9 @@
     {
         "authorList": [ "NeRd" ],
         "description": "TODO",
-        "logoFile": "recipic.png",
+        "logoFile": "ReciPic.png",
         "mcversion": "${mcversion}",
-        "modid": "recipic",
+        "modid": "ReciPic",
         "name": "ReciPic",
         "url": "https://github.com/NeRdTheNed/ReciPic",
         "version": "${version}"
