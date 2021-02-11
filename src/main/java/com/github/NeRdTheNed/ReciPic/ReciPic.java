@@ -1,6 +1,8 @@
-package com.github.NeRdTheNed;
+package com.github.NeRdTheNed.ReciPic;
 
 import java.util.Set;
+
+import com.github.NeRdTheNed.ReciPic.gui.ReciPicConfigGui;
 
 import cpw.mods.fml.client.IModGuiFactory;
 import cpw.mods.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
@@ -16,7 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 
-@Mod(modid = ReciPic.MOD_ID, guiFactory = "com.github.NeRdTheNed.ReciPic")
+@Mod(modid = ReciPic.MOD_ID, guiFactory = "com.github.NeRdTheNed.ReciPic.ReciPic")
 public final class ReciPic implements IModGuiFactory {
 
     public static Configuration config;
@@ -60,7 +62,7 @@ public final class ReciPic implements IModGuiFactory {
 
     @Override
     public Class<? extends GuiScreen> mainConfigGuiClass() {
-        return ReciPicConfig.class;
+        return ReciPicConfigGui.class;
     }
 
     @Override

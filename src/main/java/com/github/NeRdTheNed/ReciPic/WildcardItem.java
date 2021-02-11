@@ -1,4 +1,4 @@
-package com.github.NeRdTheNed;
+package com.github.NeRdTheNed.ReciPic;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
