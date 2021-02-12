@@ -1,0 +1,33 @@
+package com.github.NeRdTheNed.ReciPic.RecipeWranglers;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
+
+public class ShapedRecipeWrangler implements IRecipeWrangler {
+
+    @Override
+    public ItemStack[] wrangleRecipeType(IRecipe input) {
+        if (input instanceof ShapedRecipes) {
+            int craftingInputSlot = 0;
+            final ShapedRecipes shapedRecipe = (ShapedRecipes) input;
+            final ItemStack[] outputRecipeStack = new ItemStack[9];
+
+            for (int height = 0; height < shapedRecipe.recipeHeight; height++) {
+                for (int width = 0; width < shapedRecipe.recipeWidth; width++) {
+                    // ItemStacks are always copied, to ensure that the recipes aren't accidently modified.
+                    if (shapedRecipe.recipeItems[craftingInputSlot] != null) {
+                        outputRecipeStack[width + (height * shapedRecipe.recipeHeight)] = shapedRecipe.recipeItems[craftingInputSlot].copy();
+                    }
+
+                    craftingInputSlot++;
+                }
+            }
+
+            return outputRecipeStack;
+        }
+
+        return null;
+    }
+
+}

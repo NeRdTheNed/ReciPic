@@ -12,6 +12,8 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
     private final static int generateImagesButtonID = 1;
     private final static int previewRecipeImagesButtonID = 2;
 
+    private final static String title = "ReciPic Image Generator";
+
     private boolean areImagesGenerating = false;
 
     final String backButtonLocalised;
@@ -22,8 +24,6 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
     private int imageGenerationProgress = 0;
 
     private final GuiConfig parentScreen;
-
-    private final static String title = "ReciPic Image Generator";
 
     public ReciPicImageGeneratorGui (GuiConfig parentScreen) {
         this.parentScreen = parentScreen;
