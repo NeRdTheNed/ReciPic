@@ -2,7 +2,7 @@
     {
         "authorList": [ "NeRd" ],
         "description": "TODO",
-        "logoFile": "ReciPic.png",
+        "logoFile": "recipic.png",
         "mcversion": "${mcversion}",
         "modid": "ReciPic",
         "name": "ReciPic",
