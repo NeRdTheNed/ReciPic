@@ -41,7 +41,7 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         RecipeWranglerManager.loadAllRecipes();
         RecipeWranglerManager.resetWranglersToDefault();
         recipes = new ArrayList<ItemStack[]>();
-        final ShapedRecipes testRecipe = new ShapedRecipes(3, 3, new ItemStack[] {new ItemStack(Blocks.planks), new ItemStack(Blocks.planks), null, null, new ItemStack(Items.stick), new ItemStack(Blocks.planks), null, new ItemStack(Items.stick), null}, null);
+        final ShapedRecipes testRecipe = new ShapedRecipes(3, 3, new ItemStack[] {new ItemStack(Blocks.planks), new ItemStack(Blocks.planks), null, null, new ItemStack(Items.stick, 2), new ItemStack(Blocks.planks, 2), null, new ItemStack(Items.stick, 3), null}, null);
         recipes.add(RecipeWranglerManager.wrangleRecipe(testRecipe));
     }
 
@@ -55,7 +55,7 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
     }
 
     /** TODO Move this to a separate class */
-    private void drawRecipePreview(int x, int y, ItemStack[] stack) {
+    private void drawRecipePreview(int x, int y, ItemStack[] recipeStacks) {
         // Just in case
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         // Draw crafting table background
@@ -69,7 +69,18 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
 
         for (int recipeHeight = 0; recipeHeight < 3; recipeHeight++) {
             for (int recipeWidth = 0; recipeWidth < 3; recipeWidth++) {
-                itemRender.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(), recipes.get(0)[recipeWidth + (recipeHeight * 3)], x + (30 + (recipeWidth * 18)), y + (17 + (recipeHeight * 18)));
+                final ItemStack stack = recipeStacks[recipeWidth + (recipeHeight * 3)];
+
+                if (stack != null) {
+                    itemRender.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(), stack, x + (30 + (recipeWidth * 18)), y + (17 + (recipeHeight * 18)));
+                    String renderString = "";
+
+                    if (stack.stackSize > 1) {
+                        renderString += stack.stackSize;
+                    }
+
+                    itemRender.renderItemOverlayIntoGUI(fontRendererObj, mc.getTextureManager(), stack, x + (30 + (recipeWidth * 18)), y + (17 + (recipeHeight * 18)), renderString);
+                }
             }
         }
 
