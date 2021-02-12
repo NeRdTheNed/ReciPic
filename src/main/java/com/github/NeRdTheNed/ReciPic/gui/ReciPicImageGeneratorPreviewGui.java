@@ -85,7 +85,7 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         }
 
         // TODO Draw crafting output, draw names of items & number of items
-        // Ligting is good for items, not so good for GUIs
+        // Lighting is good for items, not so good for GUIs
         RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         // Just in case
