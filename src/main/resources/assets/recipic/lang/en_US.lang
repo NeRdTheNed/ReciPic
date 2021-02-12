@@ -6,5 +6,6 @@ ReciPic.displaySingleOreDictEntries.tooltip=Show "Any type of (item)" on OreDict
 ReciPic.displaySingleOreDictEntries=Show single OreDictionary entries.
 
 # GUI buttons
+ReciPic.config.previewRecipeImages=Preview example recipes
 ReciPic.config.enterMakeRecipeImages=Enter recipe image generation menu
 ReciPic.config.makeRecipeImages=Generate recipe images

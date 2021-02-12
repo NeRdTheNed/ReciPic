@@ -10,35 +10,50 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
 
     private final static int backButtonID = 0;
     private final static int generateImagesButtonID = 1;
+    private final static int previewRecipeImagesButtonID = 2;
 
     private boolean areImagesGenerating = false;
 
     final String backButtonLocalised;
     final String cancelButtonLocalised;
     final String generateImagesButtonLocalised;
+    final String previewRecipeImagesButtonLocalised;
 
     private int imageGenerationProgress = 0;
 
     private final GuiConfig parentScreen;
 
-    private final String title = "ReciPic Image Generator";
+    private final static String title = "ReciPic Image Generator";
 
     public ReciPicImageGeneratorGui (GuiConfig parentScreen) {
         this.parentScreen = parentScreen;
         backButtonLocalised = I18n.format("gui.done");
         generateImagesButtonLocalised = I18n.format("ReciPic.config.makeRecipeImages");
         cancelButtonLocalised = I18n.format("gui.cancel");
+        previewRecipeImagesButtonLocalised = I18n.format("ReciPic.config.previewRecipeImages");
     }
 
     @Override
     protected void actionPerformed(GuiButton button) {
         super.actionPerformed(button);
 
-        if (button.id == backButtonID) {
+        switch (button.id) {
+        case backButtonID:
             mc.displayGuiScreen(parentScreen);
-        } else if (button.id == generateImagesButtonID) {
+            break;
+
+        case generateImagesButtonID:
             areImagesGenerating = !areImagesGenerating;
             initGui();
+            break;
+
+        case previewRecipeImagesButtonID:
+            mc.displayGuiScreen(new ReciPicImageGeneratorPreviewGui(this));
+            break;
+
+        default:
+            // TODO Error handling?
+            break;
         }
     }
 
@@ -66,13 +81,6 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
     @Override
     public void initGui() {
         buttonList.clear();
-        // Add back button
-        final int backButtonWidth = Math.max(mc.fontRenderer.getStringWidth(backButtonLocalised) + 20, 100);
-        final GuiButtonExt backButton = new GuiButtonExt(backButtonID, (width / 2) - (backButtonWidth / 2), height - 29, backButtonWidth, 20, backButtonLocalised);
-        backButton.enabled = !areImagesGenerating;
-        buttonList.add(backButton);
-        // Add generate images button
-        final int generateImagesButtonWidth = Math.max(mc.fontRenderer.getStringWidth(generateImagesButtonLocalised) + 20, 100);
         final String generateImagesButtonTextSelection;
 
         if (areImagesGenerating) {
@@ -81,7 +89,37 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
             generateImagesButtonTextSelection = generateImagesButtonLocalised;
         }
 
-        final GuiButtonExt generateImagesButton = new GuiButtonExt(generateImagesButtonID, (width / 2) - (generateImagesButtonWidth / 2), height - 29 - 40, generateImagesButtonWidth, 20, generateImagesButtonTextSelection);
+        // Calculate widths of all buttons
+        final int backButtonWidth = Math.max(mc.fontRenderer.getStringWidth(backButtonLocalised) + 20, 100);
+        final int generateImagesButtonWidth = Math.max(mc.fontRenderer.getStringWidth(generateImagesButtonTextSelection) + 20, 100);
+        final int previewRecipeImagesButtonWidth = Math.max(mc.fontRenderer.getStringWidth(previewRecipeImagesButtonLocalised) + 20, 100);
+        // Use widths to calculate button positions
+        final int generateImagesButtonXPosition;
+        final int previewRecipeImagesButtonXPosition;
+
+        if (areImagesGenerating) {
+            previewRecipeImagesButtonXPosition = 0;
+            generateImagesButtonXPosition = (width / 2) - (generateImagesButtonWidth / 2);
+        } else {
+            final int buttonWidthsSummed = generateImagesButtonWidth + previewRecipeImagesButtonWidth + 10;
+            previewRecipeImagesButtonXPosition = ((width / 2) - (buttonWidthsSummed / 2)) + generateImagesButtonWidth + 5;
+            generateImagesButtonXPosition = (width / 2) - (buttonWidthsSummed / 2);
+        }
+
+        // Create buttons
+        // Create back button
+        final GuiButtonExt backButton = new GuiButtonExt(backButtonID, (width / 2) - (backButtonWidth / 2), height - 29, backButtonWidth, 20, backButtonLocalised);
+        backButton.enabled = !areImagesGenerating;
+        buttonList.add(backButton);
+
+        // Create preview recipe images button
+        if (!areImagesGenerating) {
+            final GuiButtonExt previewRecipeImagesButton = new GuiButtonExt(previewRecipeImagesButtonID, previewRecipeImagesButtonXPosition, height - 29 - 40, previewRecipeImagesButtonWidth, 20, previewRecipeImagesButtonLocalised);
+            buttonList.add(previewRecipeImagesButton);
+        }
+
+        // Create generate images button
+        final GuiButtonExt generateImagesButton = new GuiButtonExt(generateImagesButtonID, generateImagesButtonXPosition, height - 29 - 40, generateImagesButtonWidth, 20, generateImagesButtonTextSelection);
         buttonList.add(generateImagesButton);
     }
 
