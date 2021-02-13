@@ -35,19 +35,18 @@ public final class RecipeImageRenderer {
         RenderHelper.enableGUIStandardItemLighting();
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 
-        for (int recipeHeight = 0; recipeHeight < 3; recipeHeight++) {
-            for (int recipeWidth = 0; recipeWidth < 3; recipeWidth++) {
-                final ItemStack stack = recipeStacks[recipeWidth + (recipeHeight * 3)];
+        for (int recipeSlotHeight = 0; recipeSlotHeight < 3; recipeSlotHeight++) {
+            for (int recipeSlotWidth = 0; recipeSlotWidth < 3; recipeSlotWidth++) {
+                final ItemStack stack = recipeStacks[recipeSlotWidth + (recipeSlotHeight * 3)];
 
                 if (stack != null) {
-                    itemRenderRef.renderItemAndEffectIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x + (30 + (recipeWidth * 18)), y + (17 + (recipeHeight * 18)));
-                    String renderString = null;
-
-                    if (stack.stackSize > 1) {
-                        renderString = Integer.toString(stack.stackSize);
-                    }
-
-                    itemRenderRef.renderItemOverlayIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x + (30 + (recipeWidth * 18)), y + (17 + (recipeHeight * 18)), renderString);
+                    // Calculate item location relative to the slot in the crafting table
+                    final int itemX = x + (30 + (recipeSlotWidth * 18));
+                    final int itemY = y + (17 + (recipeSlotHeight * 18));
+                    // Render item
+                    itemRenderRef.renderItemAndEffectIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, itemX, itemY);
+                    // Render item overlay. If the ItemStack stack size is greater than 0, pass a String containing the stack size, if not, pass a null String.
+                    itemRenderRef.renderItemOverlayIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, itemX, itemY, (stack.stackSize > 1) ? Integer.toString(stack.stackSize) : null);
                 }
             }
         }
