@@ -50,7 +50,6 @@ public final class ReciPic implements IModGuiFactory {
     public void init(FMLPreInitializationEvent event) {
         config = new Configuration(event.getSuggestedConfigurationFile());
         syncConfig();
-        MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance().bus().register(this);
         GameRegistry.registerItem(wildcardItem, "WildcardItem");
         RecipeWranglerManager.resetWranglersToDefault();
