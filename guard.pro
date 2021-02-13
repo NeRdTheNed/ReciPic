@@ -16,25 +16,27 @@
 #-adaptresourcefilenames
 #-adaptresourcefilecontents
 
-# Keep all methods that overrides a super method, or methods that are an event handler.
+# Keep all methods that are an event handler
 
 -keepclassmembers,allowobfuscation class * {
-    @java.lang.Override,cpw.mods.fml.common.eventhandler.SubscribeEvent,cpw.mods.fml.common.Mod$EventHandler <methods>;
+    @cpw.mods.fml.common.eventhandler.SubscribeEvent,cpw.mods.fml.common.Mod$EventHandler <methods>;
 }
 
-# Keep all classes with public methods
+# Keep methods that override a super method
 
--keepclasseswithmembers,allowobfuscation public class * {
-    public <methods>;
+-keepclassmembers,allowobfuscation,allowoptimization class * {
+    @java.lang.Override <methods>;
 }
 
 # This class is referred to in String constants inside of annotations. TODO see above (around -adaptclassstrings).
 
--keepnames,allowoptimization public class com.github.NeRdTheNed.ReciPic.ReciPic
+-keep,allowoptimization public class com.github.NeRdTheNed.ReciPic.ReciPic
 
-# Keep all initialisers, because ProGuard keeps trying to make them private.
+# Keep the initialiser for ReciPicConfigGui, as it's called by Forge.
 
--keepclassmembers class * { public <init>(...); }
+-keepclassmembers,allowobfuscation class com.github.NeRdTheNed.ReciPic.gui.ReciPicConfigGui {
+    public <init>(...);
+}
 
 # TODO Check if anything else should be kept. Annotations are mandatory, as Forge uses them for reflection.
 
@@ -59,4 +61,5 @@
 
 -printusage
 -whyareyoukeeping class iDiamondhunter.**
+-printseeds
 #-printconfiguration proguardDebug.txt
