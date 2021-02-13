@@ -43,10 +43,8 @@ public final class RecipeImageRenderer {
                     // Calculate item location relative to the slot in the crafting table
                     final int itemX = x + (30 + (recipeSlotWidth * 18));
                     final int itemY = y + (17 + (recipeSlotHeight * 18));
-                    // Render item
                     itemRenderRef.renderItemAndEffectIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, itemX, itemY);
-                    // Render item overlay. If the ItemStack stack size is greater than 0, pass a String containing the stack size, if not, pass a null String.
-                    itemRenderRef.renderItemOverlayIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, itemX, itemY, (stack.stackSize > 1) ? Integer.toString(stack.stackSize) : null);
+                    itemRenderRef.renderItemOverlayIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, itemX, itemY);
                 }
             }
         }
