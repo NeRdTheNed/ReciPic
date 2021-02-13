@@ -2,6 +2,8 @@ buildscript {
     repositories {
         // Bintray will soon be retired :( I'll update this once everything has been moved onto other maven repositories.
         maven { url = "https://jcenter.bintray.com/" }
+        maven { url = "https://repo1.maven.org/maven2/" }
+        maven { url = "https://maven.google.com/" }
         maven {
             name = "forge"
             url = "https://files.minecraftforge.net/maven"
@@ -15,6 +17,7 @@ buildscript {
         classpath ('com.anatawa12.forge:ForgeGradle:1.2-1.0.+') {
             changing = true
         }
+        classpath 'com.guardsquare:proguard-gradle:7.0.1'
     }
 }
 
@@ -45,7 +48,7 @@ apply plugin: 'forge'
 sourceCompatibility = null
 targetCompatibility = null
 
-// Defines a Java 6 compatible JDK.
+// Defines a Java 6 compatible JDK. This is used to get properties requiring a reference to a JDK (rt.jar etc).
 def compiler = javaToolchains.compilerFor {
     languageVersion = JavaLanguageVersion.of(6)
 }
@@ -104,17 +107,77 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
-// This task creates a .jar file containing a deobfuscated version of this mod, for other developers to use in a development environment.
-task devJar(type: Jar) {
-    classifier = "dev"
+// This task creates a .jar file containing a deobfuscated version of this mod, for ProGuard to minimise.
+task unmappedJar(type: Jar) {
+    classifier = "unmapped"
     from sourceSets.main.output
+}
+
+// This task uses ProGuard to shrink the built .jar's file size and optimise the bytecode. TODO Cleanup.
+task proguard(dependsOn: unmappedJar, type: proguard.gradle.ProGuardTask) {
+    verbose
+
+    // Use the non-remapped .jar as the input file, because ForgeGradle has a convient task to map it to obfuscated Minecraft class names for us when we're done optimising it
+    injars "build/libs/" + rootProject.name + "-" + version + "-unmapped.jar"
+    outjars "build/libs/" + rootProject.name + "-" + version + ".jar"
+
+    // Get the location of rt.jar from the provided toolchain.
+    // Note to self: probably support building with not outdated versions of Java in the future.
+    libraryjars compiler.get().metadata.installationPath.asFile.absolutePath + "/lib/rt.jar"
+    // Probably linux?
+    libraryjars compiler.get().metadata.installationPath.asFile.absolutePath + "/jre/lib/rt.jar"
+    // Dumb MacOS stuff, Apple's Legacy JDK 6 "rt.jar" equivalent is not in any standard place
+    libraryjars compiler.get().metadata.installationPath.asFile.absolutePath + "/../Classes/classes.jar"
+
+    // Add relevant Minecraft libraries to ProGuard's list of libraries to obfuscate against. See ForgeGradle 1.2's UserConstants.
+    libraryjars project.configurations.minecraft
+    libraryjars project.configurations.minecraftDeps
+
+    // The rest of the configs are in this file
+    configuration 'guard.pro'
+}
+
+def optimisedJar = proguard.outputs.files.singleFile
+
+// This task remaps the ProGuard obfuscated .jar file from MCP mappings into Minecraft mappings. TODO Find a less cursed way to do this that doesn't only half-remap the .jar file, document more.
+task remapProguardProperly(dependsOn: ['genSrgs', 'proguard'], type: net.minecraftforge.gradle.tasks.user.reobf.ReobfTask) {
+    def forgeGradlePlugin = plugins.findPlugin 'forge'
+
+    exceptorCfg = forgeGradlePlugin.delayedFile net.minecraftforge.gradle.user.UserConstants.EXC_SRG
+    srg = forgeGradlePlugin.delayedFile net.minecraftforge.gradle.user.UserConstants.REOBF_SRG
+    fieldCsv = forgeGradlePlugin.delayedFile net.minecraftforge.gradle.user.UserConstants.FIELD_CSV
+    fieldCsv = forgeGradlePlugin.delayedFile net.minecraftforge.gradle.user.UserConstants.METHOD_CSV
+    mcVersion = forgeGradlePlugin.delayedString '{MC_VERSION}'
+
+    reobf(optimisedJar) { arg ->
+        def javaConv = project.convention.plugins.get 'java'
+        arg.classpath = javaConv.getSourceSets().getByName('main').compileClasspath
+    }
+
+    extraSrg = forgeGradlePlugin.extension.srgExtra
+
+    afterEvaluate {
+        if (forgeGradlePlugin.extension.decomp) {
+            deobfFile = tasks.deobfuscateJar.delayedOutput
+            recompFile = forgeGradlePlugin.delayedDirtyFile forgeGradlePlugin.srcDepName, null, 'jar'
+        }
+    }
+}
+
+// TODO Not sure if this should be kept.
+reobf.dependsOn 'remapProguardProperly'
+
+jar {
+    classifier = "debug" // Contains things like variables with actual names, line numbers etc. Useful for debugging, but these things take up file size, so they have to go.
 }
 
 // Creates the listed artifacts on building the mod.
 artifacts {
     archives sourcesJar
-    archives devJar
+    archives optimisedJar
 }
+
+build.finalizedBy(cleanUnmappedJar)
 
 publishing {
     publications {
@@ -125,8 +188,8 @@ publishing {
             artifact(sourcesJar) {
                 builtBy sourcesJar
             }
-            artifact(devJar) {
-                builtBy devJar
+            artifact(optimisedJar) {
+                builtBy remapProguardProperly
             }
         }
     }
