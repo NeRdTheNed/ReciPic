@@ -21,12 +21,13 @@ public final class RecipeImageRenderer {
     private final static Gui guiRef = new Gui();
     private final static RenderItem itemRenderRef = new RenderItem();
     private final static FontRenderer fontRendererRef = mineCraft.fontRenderer;
+    private final static ResourceLocation craftingTableResourceLocation = new ResourceLocation("textures/gui/container/crafting_table.png");
 
     public static void drawRecipe(int x, int y, ItemStack[] recipeStacks) {
         // Just in case
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         // Draw crafting table background
-        mineCraft.getTextureManager().bindTexture(new ResourceLocation("textures/gui/container/crafting_table.png"));
+        mineCraft.getTextureManager().bindTexture(craftingTableResourceLocation);
         guiRef.drawTexturedModalRect(x, y, 0, 0, craftingImageWidth, craftingImageHeight);
         // Draw a grey box over the "player inventory slots" portion of the image
         Gui.drawRect(x + 7, y + 83, x + 169, y + 159, 0xFFC6C6C6);
@@ -40,10 +41,10 @@ public final class RecipeImageRenderer {
 
                 if (stack != null) {
                     itemRenderRef.renderItemAndEffectIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x + (30 + (recipeWidth * 18)), y + (17 + (recipeHeight * 18)));
-                    String renderString = "";
+                    String renderString = null;
 
                     if (stack.stackSize > 1) {
-                        renderString += stack.stackSize;
+                        renderString = Integer.toString(stack.stackSize);
                     }
 
                     itemRenderRef.renderItemOverlayIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x + (30 + (recipeWidth * 18)), y + (17 + (recipeHeight * 18)), renderString);
