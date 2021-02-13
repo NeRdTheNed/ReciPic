@@ -15,7 +15,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 
 @Mod(modid = ReciPic.MOD_ID, guiFactory = "com.github.NeRdTheNed.ReciPic.ReciPic")

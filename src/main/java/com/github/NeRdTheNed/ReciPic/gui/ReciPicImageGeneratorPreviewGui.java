@@ -78,7 +78,6 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         final ArrayList<ItemStack[]> recipesToReturn = new ArrayList<ItemStack[]>();
         final ShapedRecipes testRecipe = new ShapedRecipes(3, 3, new ItemStack[] {new ItemStack(Blocks.planks), new ItemStack(Blocks.planks), null, null, new ItemStack(Items.stick, 2), new ItemStack(Blocks.planks, 2), null, new ItemStack(Items.stick, 3), null}, null);
         recipesToReturn.add(RecipeWranglerManager.wrangleRecipe(testRecipe));
-        RecipeWranglerManager.wrangleAllRecipes();
         return recipesToReturn;
     }
 

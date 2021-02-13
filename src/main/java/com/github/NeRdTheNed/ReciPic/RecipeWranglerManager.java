@@ -1,6 +1,7 @@
 package com.github.NeRdTheNed.ReciPic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.github.NeRdTheNed.ReciPic.RecipeWranglers.IRecipeWrangler;
@@ -9,7 +10,6 @@ import com.github.NeRdTheNed.ReciPic.RecipeWranglers.ShapedRecipeWrangler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
-import scala.actors.threadpool.Arrays;
 
 /** WIP, limited to only crafting table recipes for now. */
 public class RecipeWranglerManager {
