@@ -29,7 +29,7 @@ public final class ReciPic implements IModGuiFactory {
 
     public static final Item wildcardItem = new WildcardItem();
 
-    private static void syncConfig() {
+    public static void syncConfig() {
         displaySingleOreDictEntries = config.get(Configuration.CATEGORY_GENERAL, "ReciPic.displaySingleOreDictEntries", false).getBoolean();
         config.save();
     }

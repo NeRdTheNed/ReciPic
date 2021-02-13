@@ -25,6 +25,7 @@ public final class ReciPicConfigGui extends GuiConfig {
 
         if (button.id == makeRecipeImagesButtonID) {
             entryList.saveConfigElements();
+            ReciPic.syncConfig();
             mc.displayGuiScreen(new ReciPicImageGeneratorGui(this));
         }
     }
