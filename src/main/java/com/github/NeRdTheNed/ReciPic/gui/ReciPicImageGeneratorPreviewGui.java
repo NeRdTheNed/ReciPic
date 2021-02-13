@@ -1,30 +1,25 @@
 package com.github.NeRdTheNed.ReciPic.gui;
 
+import static com.github.NeRdTheNed.ReciPic.RecipeImageRenderer.craftingImageHeight;
+import static com.github.NeRdTheNed.ReciPic.RecipeImageRenderer.craftingImageWidth;
+
 import java.util.ArrayList;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
+import com.github.NeRdTheNed.ReciPic.RecipeImageRenderer;
 import com.github.NeRdTheNed.ReciPic.RecipeWranglerManager;
 
 import cpw.mods.fml.client.config.GuiButtonExt;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.util.ResourceLocation;
 
 public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
 
     private final static int backButtonID = 0;
-
-    // Crafting table is 176 × 166
-    private final static int craftingImageHeight = 166;
-    private final static int craftingImageWidth = 176;
 
     private final static String title = "ReciPic Image Generator Preview";
 
@@ -54,44 +49,6 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         }
     }
 
-    /** TODO Move this to a separate class */
-    private void drawRecipePreview(int x, int y, ItemStack[] recipeStacks) {
-        // Just in case
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        // Draw crafting table background
-        mc.getTextureManager().bindTexture(new ResourceLocation("textures/gui/container/crafting_table.png"));
-        drawTexturedModalRect(x, y, 0, 0, craftingImageWidth, craftingImageHeight);
-        // Draw a grey box over the "player inventory slots" portion of the image
-        drawRect(x + 7, y + 83, x + 169, y + 159, 0xFFC6C6C6);
-        // Draw items on top of crafting grid
-        RenderHelper.enableGUIStandardItemLighting();
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-
-        for (int recipeHeight = 0; recipeHeight < 3; recipeHeight++) {
-            for (int recipeWidth = 0; recipeWidth < 3; recipeWidth++) {
-                final ItemStack stack = recipeStacks[recipeWidth + (recipeHeight * 3)];
-
-                if (stack != null) {
-                    itemRender.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(), stack, x + (30 + (recipeWidth * 18)), y + (17 + (recipeHeight * 18)));
-                    String renderString = "";
-
-                    if (stack.stackSize > 1) {
-                        renderString += stack.stackSize;
-                    }
-
-                    itemRender.renderItemOverlayIntoGUI(fontRendererObj, mc.getTextureManager(), stack, x + (30 + (recipeWidth * 18)), y + (17 + (recipeHeight * 18)), renderString);
-                }
-            }
-        }
-
-        // TODO Draw crafting output, draw names of items & number of items
-        // Lighting is good for items, not so good for GUIs
-        RenderHelper.disableStandardItemLighting();
-        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-        // Just in case
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
@@ -99,7 +56,7 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         final int adjustedX = (width / 2) - (craftingImageWidth / 2);
         final int adjustedY = (height / 2) - (craftingImageHeight / 2);
         // For now, only draw a single "recipe".
-        drawRecipePreview(adjustedX, adjustedY, recipes.get(0));
+        RecipeImageRenderer.drawRecipe(adjustedX, adjustedY, recipes.get(0));
         drawCenteredString(fontRendererObj, "Not fully implemented yet!", (width / 2), (height / 3), 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
