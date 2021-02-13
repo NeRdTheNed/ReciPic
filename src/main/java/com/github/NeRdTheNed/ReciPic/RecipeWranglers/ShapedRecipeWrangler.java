@@ -15,9 +15,8 @@ public class ShapedRecipeWrangler implements IRecipeWrangler {
 
             for (int height = 0; height < shapedRecipe.recipeHeight; height++) {
                 for (int width = 0; width < shapedRecipe.recipeWidth; width++) {
-                    // ItemStacks are always copied, to ensure that the recipes aren't accidently modified.
                     if (shapedRecipe.recipeItems[craftingInputSlot] != null) {
-                        outputRecipeStack[width + (height * shapedRecipe.recipeHeight)] = shapedRecipe.recipeItems[craftingInputSlot].copy();
+                        outputRecipeStack[width + (height * shapedRecipe.recipeHeight)] = shapedRecipe.recipeItems[craftingInputSlot];
                     }
 
                     craftingInputSlot++;
@@ -29,5 +28,4 @@ public class ShapedRecipeWrangler implements IRecipeWrangler {
 
         return null;
     }
-
 }
