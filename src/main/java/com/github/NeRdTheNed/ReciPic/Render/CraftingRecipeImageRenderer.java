@@ -1,34 +1,24 @@
-package com.github.NeRdTheNed.ReciPic;
+package com.github.NeRdTheNed.ReciPic.Render;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-public final class CraftingRecipeImageRenderer {
+public final class CraftingRecipeImageRenderer extends RecipeRenderer {
 
-    // Crafting table is 176 × 166
+    // The crafting table texture is 176 × 166
     public final static int craftingImageHeight = 166;
     public final static int craftingImageWidth = 176;
 
-    private final static Minecraft mineCraft = Minecraft.getMinecraft();
-    private final static Gui guiRef = new Gui();
-    private final static RenderItem itemRenderRef = new RenderItem();
-    private final static FontRenderer fontRendererRef = mineCraft.fontRenderer;
     private final static ResourceLocation craftingTableResourceLocation = new ResourceLocation("textures/gui/container/crafting_table.png");
 
     public static void drawCraftingRecipe(int x, int y, ItemStack output, ItemStack[] inputStacks) {
-        // Just in case
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         // Draw crafting table background
-        mineCraft.getTextureManager().bindTexture(craftingTableResourceLocation);
-        guiRef.drawTexturedModalRect(x, y, 0, 0, craftingImageWidth, craftingImageHeight);
+        drawBackgroundImage(x, y, craftingImageWidth, craftingImageHeight, craftingTableResourceLocation);
         // Draw a grey box over the "player inventory slots" portion of the image
         Gui.drawRect(x + 7, y + 83, x + 169, y + 159, 0xFFC6C6C6);
         // Draw items on top of crafting grid
@@ -45,19 +35,12 @@ public final class CraftingRecipeImageRenderer {
 
         // Draw recipe output
         drawItemStackAtLocation(x + 124, y + 35, output);
-        // TODO Draw output item name, draw ingredient names
         // Lighting is good for items, not so good for GUIs
         RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-        // Just in case
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
-    private static void drawItemStackAtLocation(int x, int y, ItemStack stack) {
-        if (stack != null) {
-            itemRenderRef.renderItemAndEffectIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
-            itemRenderRef.renderItemOverlayIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
-        }
+        // Draw output item name (TODO Decide on colour to use (0xFF404040?))
+        guiRef.drawCenteredString(fontRendererRef, output.getDisplayName(), x + (craftingImageWidth / 2), y + 6, 0xFFFFFFFF);
+        // TODO Draw output item name, draw ingredient names
     }
 
 }

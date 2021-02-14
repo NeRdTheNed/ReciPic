@@ -1,14 +1,14 @@
 package com.github.NeRdTheNed.ReciPic.gui;
 
-import static com.github.NeRdTheNed.ReciPic.CraftingRecipeImageRenderer.craftingImageHeight;
-import static com.github.NeRdTheNed.ReciPic.CraftingRecipeImageRenderer.craftingImageWidth;
+import static com.github.NeRdTheNed.ReciPic.Render.CraftingRecipeImageRenderer.craftingImageHeight;
+import static com.github.NeRdTheNed.ReciPic.Render.CraftingRecipeImageRenderer.craftingImageWidth;
 
 import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 
-import com.github.NeRdTheNed.ReciPic.CraftingRecipeImageRenderer;
 import com.github.NeRdTheNed.ReciPic.RecipeWranglerManager;
+import com.github.NeRdTheNed.ReciPic.Render.CraftingRecipeImageRenderer;
 
 import cpw.mods.fml.client.config.GuiButtonExt;
 import net.minecraft.client.Minecraft;
@@ -127,7 +127,7 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         final int adjustedY = (height / 2) - (craftingImageHeight / 2);
         // TODO This is highly dubious
         CraftingRecipeImageRenderer.drawCraftingRecipe(adjustedX, adjustedY, (ItemStack) testCraftingRecipes.keySet().toArray()[recipeIndex], (ItemStack[]) testCraftingRecipes.values().toArray()[recipeIndex]);
-        drawCenteredString(fontRendererObj, "Not fully implemented yet!", (width / 2), adjustedY + (fontRendererObj.FONT_HEIGHT / 2), 16777215);
+        drawCenteredString(fontRendererObj, "Not fully implemented yet!", (width / 2), (craftingImageHeight + (fontRendererObj.FONT_HEIGHT / 2)), 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
