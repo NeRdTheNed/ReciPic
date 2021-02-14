@@ -111,13 +111,10 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
         final GuiButtonExt backButton = new GuiButtonExt(backButtonID, (width / 2) - (backButtonWidth / 2), height - 29, backButtonWidth, 20, backButtonLocalised);
         backButton.enabled = !areImagesGenerating;
         buttonList.add(backButton);
-
         // Create preview recipe images button
-        if (!areImagesGenerating) {
-            final GuiButtonExt previewRecipeImagesButton = new GuiButtonExt(previewRecipeImagesButtonID, previewRecipeImagesButtonXPosition, height - 29 - 40, previewRecipeImagesButtonWidth, 20, previewRecipeImagesButtonLocalised);
-            buttonList.add(previewRecipeImagesButton);
-        }
-
+        final GuiButtonExt previewRecipeImagesButton = new GuiButtonExt(previewRecipeImagesButtonID, previewRecipeImagesButtonXPosition, height - 29 - 40, previewRecipeImagesButtonWidth, 20, previewRecipeImagesButtonLocalised);
+        previewRecipeImagesButton.visible = !areImagesGenerating;
+        buttonList.add(previewRecipeImagesButton);
         // Create generate images button
         final GuiButtonExt generateImagesButton = new GuiButtonExt(generateImagesButtonID, generateImagesButtonXPosition, height - 29 - 40, generateImagesButtonWidth, 20, generateImagesButtonTextSelection);
         buttonList.add(generateImagesButton);
