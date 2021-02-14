@@ -1,13 +1,13 @@
 package com.github.NeRdTheNed.ReciPic.gui;
 
-import static com.github.NeRdTheNed.ReciPic.RecipeImageRenderer.craftingImageHeight;
-import static com.github.NeRdTheNed.ReciPic.RecipeImageRenderer.craftingImageWidth;
+import static com.github.NeRdTheNed.ReciPic.CraftingRecipeImageRenderer.craftingImageHeight;
+import static com.github.NeRdTheNed.ReciPic.CraftingRecipeImageRenderer.craftingImageWidth;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 
-import com.github.NeRdTheNed.ReciPic.RecipeImageRenderer;
+import com.github.NeRdTheNed.ReciPic.CraftingRecipeImageRenderer;
 import com.github.NeRdTheNed.ReciPic.RecipeWranglerManager;
 
 import cpw.mods.fml.client.config.GuiButtonExt;
@@ -74,27 +74,18 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
 
     private final static String title = "ReciPic Image Generator Preview";
 
-    private static ArrayList<ItemStack[]> getTestRecipes() {
-        final ArrayList<ItemStack[]> recipesToReturn = new ArrayList<ItemStack[]>();
-        final ShapedRecipes testRecipe = new ShapedRecipes(3, 3, new ItemStack[] {new ItemStack(Blocks.planks), new ItemStack(Blocks.planks), null, null, new ItemStack(Items.stick, 2), new ItemStack(Blocks.planks, 2), null, new ItemStack(Items.stick, 3), null}, null);
-        recipesToReturn.add(RecipeWranglerManager.wrangleRecipe(testRecipe));
-        return recipesToReturn;
-    }
-
-    private boolean isLeftButtonActive = true;
-    private boolean isRightButtonActive = false;
-
     final String backButtonLocalised;
 
     private final ReciPicImageGeneratorGui parentScreen;
 
-    private final ArrayList<ItemStack[]> testRecipes;
+    private final HashMap<ItemStack, ItemStack[]> testCraftingRecipes = new HashMap<ItemStack, ItemStack[]>();
+    private int recipeIndex = 0;
 
     public ReciPicImageGeneratorPreviewGui (ReciPicImageGeneratorGui parentScreen) {
         this.parentScreen = parentScreen;
         backButtonLocalised = I18n.format("gui.done");
         // Temporary testing
-        testRecipes = getTestRecipes();
+        makeTestRecipes();
     }
 
     @Override
@@ -107,16 +98,18 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
             break;
 
         case leftButtonID:
-            // Temporary testing TODO Actually implement recipe selection
-            isLeftButtonActive = false;
-            isRightButtonActive = true;
+            if (recipeIndex > 0) {
+                recipeIndex--;
+            }
+
             initGui();
             break;
 
         case rightButtonID:
-            // Temporary testing TODO Actually implement recipe selection
-            isLeftButtonActive = true;
-            isRightButtonActive = false;
+            if (recipeIndex < (testCraftingRecipes.size() - 1)) {
+                recipeIndex++;
+            }
+
             initGui();
             break;
 
@@ -132,8 +125,8 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         drawCenteredString(fontRendererObj, title, width / 2, 8, 16777215);
         final int adjustedX = (width / 2) - (craftingImageWidth / 2);
         final int adjustedY = (height / 2) - (craftingImageHeight / 2);
-        // For now, only draw a single "recipe".
-        RecipeImageRenderer.drawRecipe(adjustedX, adjustedY, testRecipes.get(0));
+        // TODO This is highly dubious
+        CraftingRecipeImageRenderer.drawCraftingRecipe(adjustedX, adjustedY, (ItemStack) testCraftingRecipes.keySet().toArray()[recipeIndex], (ItemStack[]) testCraftingRecipes.values().toArray()[recipeIndex]);
         drawCenteredString(fontRendererObj, "Not fully implemented yet!", (width / 2), adjustedY + (fontRendererObj.FONT_HEIGHT / 2), 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -153,10 +146,17 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         // Add left & right buttons
         final ArrowButton buttonLeft = new ArrowButton(leftButtonID, leftArrowX, arrowY, false);
         final ArrowButton buttonRight = new ArrowButton(rightButtonID, rightArrowX, arrowY, true);
-        buttonLeft.visible = isLeftButtonActive;
-        buttonRight.visible = isRightButtonActive;
+        buttonLeft.visible = recipeIndex > 0;
+        buttonRight.visible = recipeIndex < (testCraftingRecipes.size() - 1);
         buttonList.add(buttonLeft);
         buttonList.add(buttonRight);
+    }
+
+    private void makeTestRecipes() {
+        final ShapedRecipes testRecipe = new ShapedRecipes(3, 3, new ItemStack[] {new ItemStack(Blocks.planks), new ItemStack(Blocks.planks), null, null, new ItemStack(Items.stick, 2), new ItemStack(Blocks.planks, 2), null, new ItemStack(Items.stick, 3), null}, new ItemStack(Items.wooden_pickaxe, 2));
+        testCraftingRecipes.put(testRecipe.getRecipeOutput(), RecipeWranglerManager.wrangleRecipe(testRecipe));
+        final ShapedRecipes testRecipe2 = new ShapedRecipes(3, 3, new ItemStack[] {new ItemStack(Blocks.iron_block), new ItemStack(Blocks.iron_block), null, null, new ItemStack(Items.stick, 2), new ItemStack(Blocks.iron_block, 2), null, new ItemStack(Items.stick, 3), null}, new ItemStack(Items.iron_pickaxe, 2));
+        testCraftingRecipes.put(testRecipe2.getRecipeOutput(), RecipeWranglerManager.wrangleRecipe(testRecipe2));
     }
 
     @Override
