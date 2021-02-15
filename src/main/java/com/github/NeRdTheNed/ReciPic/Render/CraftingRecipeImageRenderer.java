@@ -49,7 +49,7 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
         guiRef.drawCenteredString(fontRendererRef, output.getDisplayName(), x + (craftingImageWidth / 2), y + 6, 0xFFFFFFFF);
         // Temporary testing
         drawItemStackAtLocationWithGLBoilerplate(x + sideMargin, y + updownMargin + magicNumber, output);
-        drawStringWrapped(x + textLeftSideMargin, y + updownMargin, craftingImageWidth - (textLeftSideMargin + sideMargin), "more test sting more test");
+        drawStringWrapped(x + textLeftSideMargin, y + updownMargin, craftingImageWidth - (textLeftSideMargin + sideMargin), "This is a test string. This string will hopefully be wrapped when drawn by the function that I wrote to do that.");
         // TODO Draw output item name, draw ingredient names
     }
 
