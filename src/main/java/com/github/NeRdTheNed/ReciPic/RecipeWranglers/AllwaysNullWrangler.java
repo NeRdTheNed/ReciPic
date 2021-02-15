@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 
 /** Only for testing purposes TODO Cleanup, better documentation */
-public class AllwaysNullWrangler implements IRecipeWrangler {
+public class AllwaysNullWrangler extends AbstractRecipeWrangler {
 
     @Override
     public ItemStack[] wrangleRecipeType(IRecipe input) {

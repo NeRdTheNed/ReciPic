@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 
-public class ShapedRecipeWrangler implements IRecipeWrangler {
+public class ShapedRecipeWrangler extends AbstractRecipeWrangler {
 
     @Override
     public ItemStack[] wrangleRecipeType(IRecipe input) {
