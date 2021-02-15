@@ -157,6 +157,8 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         testCraftingRecipes.put(testRecipe.getRecipeOutput(), RecipeWranglerManager.wrangleRecipe(testRecipe));
         final ShapedRecipes testRecipe2 = new ShapedRecipes(3, 3, new ItemStack[] {new ItemStack(Blocks.iron_block), new ItemStack(Blocks.iron_block), null, null, new ItemStack(Items.stick, 2), new ItemStack(Blocks.iron_block, 2), null, new ItemStack(Items.stick, 3), null}, new ItemStack(Items.iron_pickaxe, 2));
         testCraftingRecipes.put(testRecipe2.getRecipeOutput(), RecipeWranglerManager.wrangleRecipe(testRecipe2));
+        final ShapedRecipes testRecipe3 = new ShapedRecipes(2, 2, new ItemStack[] {new ItemStack(Items.diamond), new ItemStack(Blocks.dirt), new ItemStack(Blocks.dirt), new ItemStack(Items.diamond)}, new ItemStack(Blocks.diamond_ore));
+        testCraftingRecipes.put(testRecipe3.getRecipeOutput(), RecipeWranglerManager.wrangleRecipe(testRecipe3));
     }
 
     @Override

@@ -14,6 +14,13 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
     public final static int craftingImageHeight = 166;
     public final static int craftingImageWidth = 176;
 
+    // TODO reorganize & document
+    private final static int itemSize = 18;
+    private final static int sideMargin = 8;
+    private final static int textLeftSideMargin = ((sideMargin + (sideMargin / 2)) - 1) + itemSize;
+    private final static int updownMargin = 84 - itemSize;
+    private final static int magicNumber = 5; // help
+
     private final static ResourceLocation craftingTableResourceLocation = new ResourceLocation("textures/gui/container/crafting_table.png");
 
     public static void drawCraftingRecipe(int x, int y, ItemStack output, ItemStack[] inputStacks) {
@@ -40,6 +47,9 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         // Draw output item name (TODO Decide on colour to use (0xFF404040?))
         guiRef.drawCenteredString(fontRendererRef, output.getDisplayName(), x + (craftingImageWidth / 2), y + 6, 0xFFFFFFFF);
+        // Temporary testing
+        drawItemStackAtLocationWithGLBoilerplate(x + sideMargin, y + updownMargin + magicNumber, output);
+        drawStringWrapped(x + textLeftSideMargin, y + updownMargin, craftingImageWidth - (textLeftSideMargin + sideMargin), "more test sting more test");
         // TODO Draw output item name, draw ingredient names
     }
 

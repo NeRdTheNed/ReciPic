@@ -1,5 +1,7 @@
 package com.github.NeRdTheNed.ReciPic.Render;
 
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -37,6 +39,19 @@ public abstract class RecipeRenderer {
         drawItemStackAtLocation(x, y, stack);
         RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+    }
+
+    protected static int drawStringWrapped(int x, int y, int width, String string) {
+        @SuppressWarnings("unchecked")
+        final List<String> wrappedStrings = fontRendererRef.listFormattedStringToWidth(string, width);
+        int amountWrapped = 0;
+
+        for (final String wrappedLine : wrappedStrings) {
+            amountWrapped += fontRendererRef.FONT_HEIGHT;
+            fontRendererRef.drawString(wrappedLine, x, y + amountWrapped, 0x404040);
+        }
+
+        return amountWrapped;
     }
 
 }
