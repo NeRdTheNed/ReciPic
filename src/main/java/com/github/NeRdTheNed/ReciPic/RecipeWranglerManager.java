@@ -35,7 +35,7 @@ public class RecipeWranglerManager {
         return recipeInputsForItem;
     }
 
-    private static void printRecipesToConsole() {
+    public static void printRecipesToConsole() {
         final HashMap<ItemStack, ItemStack[]> recipesToPrint = getWrangledRecipes();
 
         for (final ItemStack stack : recipesToPrint.keySet()) {
