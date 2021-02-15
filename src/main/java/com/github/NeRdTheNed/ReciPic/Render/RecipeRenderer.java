@@ -20,10 +20,23 @@ public abstract class RecipeRenderer {
     protected final static RenderItem itemRenderRef = new RenderItem();
     protected final static FontRenderer fontRendererRef = mineCraft.fontRenderer;
 
+    protected final static int itemSize = 18;
+
     protected static void drawBackgroundImage(int x, int y, int width, int height, ResourceLocation image) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mineCraft.getTextureManager().bindTexture(image);
         guiRef.drawTexturedModalRect(x, y, 0, 0, width, height);
+    }
+
+    protected static void drawItemsAndTextWithBorders(int x, int y, int width, ItemStack[] stacks) {
+        final int textWidth = width - itemSize;
+
+        for (final ItemStack stack : stacks) {
+            if (stack != null) {
+                drawItemStackAtLocationWithGLBoilerplate(x, y + (itemSize / 4), stack);
+                y += drawStringWrapped(x + itemSize, y, textWidth, stack.getDisplayName()) + fontRendererRef.FONT_HEIGHT;
+            }
+        }
     }
 
     protected static void drawItemStackAtLocation(int x, int y, ItemStack stack) {
