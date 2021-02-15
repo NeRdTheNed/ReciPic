@@ -45,7 +45,7 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
         // Draw output item name (TODO Decide on colour to use (0xFF404040?))
         guiRef.drawCenteredString(fontRendererRef, output.getDisplayName(), x + (craftingImageWidth / 2), y + 6, 0xFFFFFFFF);
         // Temporary testing
-        drawItemsAndTextWithBorders(x + sideMargin, y + updownMargin, craftingImageWidth, inputStacks);
+        drawItemsAndText(x + sideMargin, y + updownMargin, craftingImageWidth - (sideMargin * 2), inputStacks);
     }
 
 }

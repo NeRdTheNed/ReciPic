@@ -28,13 +28,11 @@ public abstract class RecipeRenderer {
         guiRef.drawTexturedModalRect(x, y, 0, 0, width, height);
     }
 
-    protected static void drawItemsAndTextWithBorders(int x, int y, int width, ItemStack[] stacks) {
-        final int textWidth = width - itemSize;
-
+    protected static void drawItemsAndText(int x, int y, int width, ItemStack[] stacks) {
         for (final ItemStack stack : stacks) {
             if (stack != null) {
                 drawItemStackAtLocationWithGLBoilerplate(x, y + (itemSize / 4), stack);
-                y += drawStringWrapped(x + itemSize, y, textWidth, stack.getDisplayName()) + fontRendererRef.FONT_HEIGHT;
+                y += drawStringWrapped(x + itemSize, y, width - itemSize, stack.getDisplayName()) + fontRendererRef.FONT_HEIGHT;
             }
         }
     }
