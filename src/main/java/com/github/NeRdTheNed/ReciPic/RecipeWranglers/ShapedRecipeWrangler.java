@@ -16,7 +16,7 @@ public class ShapedRecipeWrangler implements IRecipeWrangler {
             for (int height = 0; height < shapedRecipe.recipeHeight; height++) {
                 for (int width = 0; width < shapedRecipe.recipeWidth; width++) {
                     if (shapedRecipe.recipeItems[craftingInputSlot] != null) {
-                        outputRecipeStack[width + (height * shapedRecipe.recipeHeight)] = shapedRecipe.recipeItems[craftingInputSlot];
+                        outputRecipeStack[width + (height * 3)] = shapedRecipe.recipeItems[craftingInputSlot];
                     }
 
                     craftingInputSlot++;
