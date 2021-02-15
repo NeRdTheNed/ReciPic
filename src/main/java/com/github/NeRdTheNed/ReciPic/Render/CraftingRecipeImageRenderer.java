@@ -46,8 +46,8 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         // Draw output item name (TODO Decide on colour to use (0xFF404040?))
         guiRef.drawCenteredString(fontRendererRef, output.getDisplayName(), x + (craftingImageWidth / 2), y + 6, 0xFFFFFFFF);
-        // Temporary testing
-        drawItemsAndText(x + sideMargin, y + updownMargin, craftingImageWidth - (sideMargin * 2), inputStacks);
+        // Draw ingredient names
+        sortAndDrawItemsAndText(x + sideMargin, y + updownMargin, craftingImageWidth - (sideMargin * 2), inputStacks);
     }
 
 }

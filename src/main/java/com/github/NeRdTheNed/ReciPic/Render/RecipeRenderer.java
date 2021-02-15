@@ -1,5 +1,8 @@
 package com.github.NeRdTheNed.ReciPic.Render;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -28,7 +31,7 @@ public abstract class RecipeRenderer {
         guiRef.drawTexturedModalRect(x, y, 0, 0, width, height);
     }
 
-    protected static void drawItemsAndText(int x, int y, int width, ItemStack[] stacks) {
+    private static void drawItemsAndText(int x, int y, int width, ItemStack[] stacks) {
         for (final ItemStack stack : stacks) {
             if (stack != null) {
                 drawItemStackAtLocationWithGLBoilerplate(x, y + (itemSize / 4), stack);
@@ -65,6 +68,33 @@ public abstract class RecipeRenderer {
         }
 
         return amountWrapped;
+    }
+
+    /** TODO This is pure garbage, fix later. */
+    protected static void sortAndDrawItemsAndText(int x, int y, int width, ItemStack[] stacks) {
+        final HashMap<String, ItemStack> items = new HashMap<String, ItemStack>();
+
+        for (final ItemStack stack : stacks) {
+            if ((stack != null) && !items.containsKey(stack.getDisplayName())) {
+                items.put(stack.getDisplayName(), stack);
+            } /* else {
+
+            	ItemStack thisProbablyWillNotBeAnIssue = items.get(stack.getDisplayName());
+            	if (!ItemStack.areItemStacksEqual(stack, thisProbablyWillNotBeAnIssue)) {
+            		// ???
+            	}
+            } */
+        }
+
+        final ArrayList<String> itemNames = new ArrayList<String>(items.keySet());
+        Collections.sort(itemNames, String.CASE_INSENSITIVE_ORDER);
+        final ItemStack[] sortedStacks = new ItemStack[itemNames.size()];
+
+        for (int i = 0; i < itemNames.size(); i++) {
+            sortedStacks[i] = items.get(itemNames.get(i));
+        }
+
+        drawItemsAndText(x, y, width, sortedStacks);
     }
 
 }
