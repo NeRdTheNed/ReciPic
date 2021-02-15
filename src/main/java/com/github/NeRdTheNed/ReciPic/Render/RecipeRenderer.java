@@ -47,9 +47,11 @@ public abstract class RecipeRenderer {
     protected static void drawItemStackAtLocationWithGLBoilerplate(int x, int y, ItemStack stack) {
         RenderHelper.enableGUIStandardItemLighting();
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
         drawItemStackAtLocation(x, y, stack);
         RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
     }
 
     protected static int drawStringWrapped(int x, int y, int width, String string) {

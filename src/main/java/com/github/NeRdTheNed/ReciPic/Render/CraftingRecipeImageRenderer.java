@@ -28,6 +28,7 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
         // Draw items on top of crafting grid
         RenderHelper.enableGUIStandardItemLighting();
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
 
         for (int recipeSlotHeight = 0; recipeSlotHeight < 3; recipeSlotHeight++) {
             for (int recipeSlotWidth = 0; recipeSlotWidth < 3; recipeSlotWidth++) {
@@ -42,6 +43,7 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
         // Lighting is good for items, not so good for GUIs
         RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
         // Draw output item name (TODO Decide on colour to use (0xFF404040?))
         guiRef.drawCenteredString(fontRendererRef, output.getDisplayName(), x + (craftingImageWidth / 2), y + 6, 0xFFFFFFFF);
         // Temporary testing
