@@ -150,7 +150,7 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         buttonList.add(buttonLeft);
         buttonList.add(buttonRight);
         // Temporary testing
-        craftingRecipeImageRenderer.drawAndSaveCraftingRecipe(craftingImageWidth, craftingImageHeight, (ItemStack) testCraftingRecipes.keySet().toArray()[recipeIndex], (ItemStack[]) testCraftingRecipes.values().toArray()[recipeIndex]);
+        craftingRecipeImageRenderer.drawAndSaveCraftingRecipe((ItemStack) testCraftingRecipes.keySet().toArray()[recipeIndex], (ItemStack[]) testCraftingRecipes.values().toArray()[recipeIndex]);
     }
 
     /** TODO Create set of recipes to use for testing */

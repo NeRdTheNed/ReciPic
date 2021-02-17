@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL12;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -19,6 +20,8 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
     private final static int updownMargin = 84 - itemSize;
 
     private final static ResourceLocation craftingTableResourceLocation = new ResourceLocation("textures/gui/container/crafting_table.png");
+
+    private final Framebuffer craftingFramebuffer = new Framebuffer(craftingImageWidth, craftingImageHeight, false);
 
     @Override
     public void drawCraftingRecipe(int x, int y, ItemStack output, ItemStack[] inputStacks) {
@@ -49,6 +52,11 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
         guiRef.drawCenteredString(fontRendererRef, output.getDisplayName(), x + (craftingImageWidth / 2), y + 6, 0xFFFFFFFF);
         // Draw ingredient names
         sortAndDrawItemsAndText(x + sideMargin, y + updownMargin, craftingImageWidth - (sideMargin * 2), inputStacks);
+    }
+
+    @Override
+    protected Framebuffer getBuffer() {
+        return craftingFramebuffer;
     }
 
 }

@@ -39,6 +39,8 @@ public abstract class RecipeRenderer {
 
     protected final static int itemSize = 18;
 
+    private final static File minecraftRecipesDir = new File(Minecraft.getMinecraft().mcDataDir, "recipes");
+
     protected static void drawBackgroundImage(int x, int y, int width, int height, ResourceLocation image) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mineCraft.getTextureManager().bindTexture(image);
@@ -125,14 +127,15 @@ public abstract class RecipeRenderer {
      * Additionally, need to implement transparency in output images (why is there a border around the images?), need to check if file exists before writing to it.
      * Also, figure out which bits of this can be removed without everything breaking and make like all of this code better.
      */
-    public void drawAndSaveCraftingRecipe(int width, int height, ItemStack output, ItemStack[] inputStacks) {
+    public void drawAndSaveCraftingRecipe(ItemStack output, ItemStack[] inputStacks) {
         // TODO all of this method is inefficient and hacky, make better
         final int bitsPerPixel = 4;
-        (new File(Minecraft.getMinecraft().mcDataDir, "recipes/")).mkdir();
-        final File outputFile = new File(Minecraft.getMinecraft().mcDataDir, "recipes/" + output.getUnlocalizedName() + ".png");
-        final Framebuffer framebuffer = new Framebuffer(width, height, true);
-        framebuffer.createFramebuffer(width, height);
-        framebuffer.bindFramebuffer(true);
+        (minecraftRecipesDir).mkdir();
+        final File outputFile = new File(minecraftRecipesDir + "/" + output.getUnlocalizedName() + ".png");
+        final Framebuffer framebuffer = getBuffer();
+        final int width = framebuffer.framebufferWidth;
+        final int height = framebuffer.framebufferHeight;
+        framebuffer.bindFramebuffer(false);
         // See classes referencing the Framebuffer class
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
@@ -140,13 +143,13 @@ public abstract class RecipeRenderer {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadIdentity();
         GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
-        GL11.glViewport(0, 0, width, height); // might not do anything?
+        GL11.glViewport(0, 0, width, height);
         // Draw recipe image
         drawCraftingRecipe(0, 0, output, inputStacks);
         final ByteBuffer recipeImageBuffer = ByteBuffer.allocateDirect(width * height * bitsPerPixel).order(ByteOrder.nativeOrder());
         framebuffer.bindFramebufferTexture();
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, recipeImageBuffer);
-        final BufferedImage renderedRecipeImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        final BufferedImage renderedRecipeImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
         // TODO this is inefficient
         for (int x = 0; x < width; x++) {
@@ -156,7 +159,8 @@ public abstract class RecipeRenderer {
                 final int r = recipeImageBuffer.get(i) & 0xFF;
                 final int g = recipeImageBuffer.get(i + 1) & 0xFF;
                 final int b = recipeImageBuffer.get(i + 2) & 0xFF;
-                renderedRecipeImage.setRGB(x, height - (y + 1), (0xFF << 24) | (r << 16) | (g << 8) | b);
+                final int a = recipeImageBuffer.get(i + 3) & 0xFF;
+                renderedRecipeImage.setRGB(x, height - (y + 1), (a << 24) | (r << 16) | (g << 8) | b);
                 // TODO use http://forum.lwjgl.org/index.php?topic=3346.0 instead?
             }
         }
@@ -169,10 +173,9 @@ public abstract class RecipeRenderer {
             e.printStackTrace();
         }
 
-        // TODO this is inefficient, also reuse framebuffer in the future
+        // TODO see if there's a better way to do this
         framebuffer.unbindFramebuffer();
         framebuffer.unbindFramebufferTexture();
-        framebuffer.deleteFramebuffer();
         // See classes referencing the Framebuffer class
         Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(false);
         GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -187,5 +190,7 @@ public abstract class RecipeRenderer {
     }
 
     public abstract void drawCraftingRecipe(int x, int y, ItemStack output, ItemStack[] inputStacks);
+
+    protected abstract Framebuffer getBuffer();
 
 }
