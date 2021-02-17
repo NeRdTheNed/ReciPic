@@ -2,10 +2,10 @@ package com.github.NeRdTheNed.ReciPic.Render;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import org.lwjgl.util.Dimension;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -15,13 +15,13 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
     public final static int craftingImageHeight = 166;
     public final static int craftingImageWidth = 176;
 
+    private final static Dimension craftingImageDimension = new Dimension(craftingImageWidth, craftingImageHeight);
+
     // TODO reorganize & document
     private final static int sideMargin = 8;
     private final static int updownMargin = 84 - itemSize;
 
     private final static ResourceLocation craftingTableResourceLocation = new ResourceLocation("textures/gui/container/crafting_table.png");
-
-    private final Framebuffer craftingFramebuffer = new Framebuffer(craftingImageWidth, craftingImageHeight, false);
 
     @Override
     public void drawCraftingRecipe(int x, int y, ItemStack output, ItemStack[] inputStacks) {
@@ -55,8 +55,9 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
     }
 
     @Override
-    protected Framebuffer getBuffer() {
-        return craftingFramebuffer;
+    protected Dimension getDimension() {
+        // TODO Auto-generated method stub
+        return craftingImageDimension;
     }
 
 }

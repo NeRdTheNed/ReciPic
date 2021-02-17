@@ -93,13 +93,14 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
         drawCenteredString(fontRendererObj, title, width / 2, 8, 16777215);
+        super.drawScreen(mouseX, mouseY, partialTicks);
 
         if (areImagesGenerating) {
             drawCenteredString(fontRendererObj, "Generating recipe images...", (width / 2), (height / 3), 16777215);
-            drawCenteredString(fontRendererObj, ("Mod development progress: " + " " + ((int)(((float) imageGenerationProgress / (float) craftingRecipes.size()) * 100)) + "%"), (width / 2), (height / 3) + (fontRendererObj.FONT_HEIGHT * 2), 16777215);
+            drawCenteredString(fontRendererObj, ("Recipe generation progress: " + " " + ((int)(((float) imageGenerationProgress / (float) craftingRecipes.size()) * 100)) + "%"), (width / 2), (height / 3) + (fontRendererObj.FONT_HEIGHT * 2), 16777215);
 
             for (int i = 0; (imageGenerationProgress < craftingRecipes.size()) && (i < imageBatchSize); i++) {
-                craftingRecipeImageRenderer.drawAndSaveCraftingRecipe((ItemStack) craftingRecipes.keySet().toArray()[imageGenerationProgress], (ItemStack[]) craftingRecipes.values().toArray()[imageGenerationProgress]);
+                craftingRecipeImageRenderer.drawAndSaveCraftingRecipe((ItemStack) craftingRecipes.keySet().toArray()[imageGenerationProgress], (ItemStack[]) craftingRecipes.values().toArray()[imageGenerationProgress], 4);
                 imageGenerationProgress++;
             }
 
@@ -108,8 +109,6 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
                 initGui();
             }
         }
-
-        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
 

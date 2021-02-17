@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import org.lwjgl.util.Dimension;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -127,12 +128,12 @@ public abstract class RecipeRenderer {
      * Additionally, need to implement transparency in output images (why is there a border around the images?), need to check if file exists before writing to it.
      * Also, figure out which bits of this can be removed without everything breaking and make like all of this code better.
      */
-    public void drawAndSaveCraftingRecipe(ItemStack output, ItemStack[] inputStacks) {
+    public void drawAndSaveCraftingRecipe(ItemStack output, ItemStack[] inputStacks, int scale) {
         // TODO all of this method is inefficient and hacky, make better
         final int bitsPerPixel = 4;
-        (minecraftRecipesDir).mkdir();
+        minecraftRecipesDir.mkdir();
         final File outputFile = new File(minecraftRecipesDir + "/" + output.getUnlocalizedName() + ".png");
-        final Framebuffer framebuffer = getBuffer();
+        final Framebuffer framebuffer = new Framebuffer(getDimension().getWidth() * scale, getDimension().getHeight() * scale, false);
         final int width = framebuffer.framebufferWidth;
         final int height = framebuffer.framebufferHeight;
         framebuffer.bindFramebuffer(false);
@@ -144,6 +145,7 @@ public abstract class RecipeRenderer {
         GL11.glLoadIdentity();
         GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
         GL11.glViewport(0, 0, width, height);
+        GL11.glScalef(scale, scale, scale);
         // Draw recipe image
         drawCraftingRecipe(0, 0, output, inputStacks);
         final ByteBuffer recipeImageBuffer = ByteBuffer.allocateDirect(width * height * bitsPerPixel).order(ByteOrder.nativeOrder());
@@ -191,6 +193,6 @@ public abstract class RecipeRenderer {
 
     public abstract void drawCraftingRecipe(int x, int y, ItemStack output, ItemStack[] inputStacks);
 
-    protected abstract Framebuffer getBuffer();
+    protected abstract Dimension getDimension();
 
 }
