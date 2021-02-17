@@ -65,6 +65,8 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         }
     }
 
+    private final static CraftingRecipeImageRenderer craftingRecipeImageRenderer = new CraftingRecipeImageRenderer();
+
     private final static int backButtonID = 0;
     private final static int leftButtonID = 1;
     private final static int rightButtonID = 2;
@@ -123,7 +125,7 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         final int adjustedX = (width / 2) - (craftingImageWidth / 2);
         final int adjustedY = (height / 2) - (craftingImageHeight / 2);
         // TODO This is highly dubious
-        CraftingRecipeImageRenderer.drawCraftingRecipe(adjustedX, adjustedY, (ItemStack) testCraftingRecipes.keySet().toArray()[recipeIndex], (ItemStack[]) testCraftingRecipes.values().toArray()[recipeIndex]);
+        craftingRecipeImageRenderer.drawCraftingRecipe(adjustedX, adjustedY, (ItemStack) testCraftingRecipes.keySet().toArray()[recipeIndex], (ItemStack[]) testCraftingRecipes.values().toArray()[recipeIndex]);
         drawCenteredString(fontRendererObj, "Not fully implemented yet!", (width / 2), (craftingImageHeight + (fontRendererObj.FONT_HEIGHT / 2)), 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -147,6 +149,8 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         buttonRight.visible = recipeIndex < (testCraftingRecipes.size() - 1);
         buttonList.add(buttonLeft);
         buttonList.add(buttonRight);
+        // Temporary testing
+        craftingRecipeImageRenderer.drawAndSaveCraftingRecipe(craftingImageWidth, craftingImageHeight, (ItemStack) testCraftingRecipes.keySet().toArray()[recipeIndex], (ItemStack[]) testCraftingRecipes.values().toArray()[recipeIndex]);
     }
 
     /** TODO Create set of recipes to use for testing */

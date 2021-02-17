@@ -1,9 +1,21 @@
 package com.github.NeRdTheNed.ReciPic.Render;
 
+import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glGetTexImage;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -11,8 +23,10 @@ import org.lwjgl.opengl.GL12;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -96,5 +110,82 @@ public abstract class RecipeRenderer {
 
         drawItemsAndText(x, y, width, sortedStacks);
     }
+
+    /** TODO There is likely a much better way to do this, but I don't know OpenGL very well. References for future use:
+     * - http://forum.lwjgl.org/index.php?topic=6677.0
+     * - http://forum.lwjgl.org/index.php?topic=5659.0
+     * - http://forum.lwjgl.org/index.php?topic=3346.0
+     * - http://forum.lwjgl.org/index.php?topic=2903.0
+     * - http://wiki.lwjgl.org/wiki/Render_to_Texture_with_Frame_Buffer_Objects_(FBO).html
+     * - https://github.com/mattdesl/lwjgl-basics/wiki/FrameBufferObjects
+     * - https://stackoverflow.com/questions/2571402/how-to-use-glortho-in-opengl
+     * - https://stackoverflow.com/questions/51484274/opengl-drawing-texture-wrong
+     * - https://gist.github.com/anonymous/35f9a540a82ad369e4e3
+     * - A bunch of classes that reference the Framebuffer class
+     * Additionally, need to implement transparency in output images (why is there a border around the images?), need to check if file exists before writing to it.
+     * Also, figure out which bits of this can be removed without everything breaking and make like all of this code better.
+     */
+    public void drawAndSaveCraftingRecipe(int width, int height, ItemStack output, ItemStack[] inputStacks) {
+        // TODO all of this method is inefficient and hacky, make better
+        final int bitsPerPixel = 4;
+        (new File(Minecraft.getMinecraft().mcDataDir, "recipes/")).mkdir();
+        final File outputFile = new File(Minecraft.getMinecraft().mcDataDir, "recipes/" + output.getUnlocalizedName() + ".png");
+        final Framebuffer framebuffer = new Framebuffer(width, height, true);
+        framebuffer.createFramebuffer(width, height);
+        framebuffer.bindFramebuffer(true);
+        // See classes referencing the Framebuffer class
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glLoadIdentity();
+        GL11.glOrtho(0.0D, width, height, 0.0D, 1000.0D, 3000.0D);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glLoadIdentity();
+        GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
+        GL11.glViewport(0, 0, width, height); // might not do anything?
+        // Draw recipe image
+        drawCraftingRecipe(0, 0, output, inputStacks);
+        final ByteBuffer recipeImageBuffer = ByteBuffer.allocateDirect(width * height * bitsPerPixel).order(ByteOrder.nativeOrder());
+        framebuffer.bindFramebufferTexture();
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, recipeImageBuffer);
+        final BufferedImage renderedRecipeImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        // TODO this is inefficient
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                // http://forum.lwjgl.org/index.php?topic=6677.0, https://gist.github.com/anonymous/35f9a540a82ad369e4e3
+                final int i = (x + (width * y)) * bitsPerPixel;
+                final int r = recipeImageBuffer.get(i) & 0xFF;
+                final int g = recipeImageBuffer.get(i + 1) & 0xFF;
+                final int b = recipeImageBuffer.get(i + 2) & 0xFF;
+                renderedRecipeImage.setRGB(x, height - (y + 1), (0xFF << 24) | (r << 16) | (g << 8) | b);
+                // TODO use http://forum.lwjgl.org/index.php?topic=3346.0 instead?
+            }
+        }
+
+        // TODO implement choosing output image format via Forge configuration
+        try {
+            ImageIO.write(renderedRecipeImage, "PNG", outputFile);
+        } catch (final IOException e) {
+            System.out.println("Error writing recipe image: ");
+            e.printStackTrace();
+        }
+
+        // TODO this is inefficient, also reuse framebuffer in the future
+        framebuffer.unbindFramebuffer();
+        framebuffer.unbindFramebufferTexture();
+        framebuffer.deleteFramebuffer();
+        // See classes referencing the Framebuffer class
+        Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(false);
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glLoadIdentity();
+        // TODO this is inefficient
+        final ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft(), Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
+        GL11.glOrtho(0.0D, scaledResolution.getScaledWidth_double(), scaledResolution.getScaledHeight_double(), 0.0D, 1000.0D, 3000.0D);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glLoadIdentity();
+        GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
+        GL11.glViewport(0, 0, Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
+    }
+
+    public abstract void drawCraftingRecipe(int x, int y, ItemStack output, ItemStack[] inputStacks);
 
 }

@@ -20,7 +20,8 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
 
     private final static ResourceLocation craftingTableResourceLocation = new ResourceLocation("textures/gui/container/crafting_table.png");
 
-    public static void drawCraftingRecipe(int x, int y, ItemStack output, ItemStack[] inputStacks) {
+    @Override
+    public void drawCraftingRecipe(int x, int y, ItemStack output, ItemStack[] inputStacks) {
         // Draw crafting table background
         drawBackgroundImage(x, y, craftingImageWidth, craftingImageHeight, craftingTableResourceLocation);
         // Draw a grey box over the "player inventory slots" portion of the image
