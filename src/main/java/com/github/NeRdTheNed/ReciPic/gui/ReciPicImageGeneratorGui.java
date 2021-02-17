@@ -1,10 +1,21 @@
 package com.github.NeRdTheNed.ReciPic.gui;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+
+import org.apache.commons.io.FileUtils;
+
+import com.github.NeRdTheNed.ReciPic.RecipeWranglerManager;
+import com.github.NeRdTheNed.ReciPic.Render.CraftingRecipeImageRenderer;
+
 import cpw.mods.fml.client.config.GuiButtonExt;
 import cpw.mods.fml.client.config.GuiConfig;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
 
 final class ReciPicImageGeneratorGui extends GuiScreen {
 
@@ -14,16 +25,24 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
 
     private final static String title = "ReciPic Image Generator";
 
+    private final static CraftingRecipeImageRenderer craftingRecipeImageRenderer = new CraftingRecipeImageRenderer();
+
+    private final static File minecraftRecipesDir = new File(Minecraft.getMinecraft().mcDataDir, "recipes");
+
     private boolean areImagesGenerating = false;
 
     final String backButtonLocalised;
     final String cancelButtonLocalised;
     final String generateImagesButtonLocalised;
+
     final String previewRecipeImagesButtonLocalised;
 
     private int imageGenerationProgress = 0;
+    private final int imageBatchSize = 10;
 
     private final GuiConfig parentScreen;
+
+    private final HashMap<ItemStack, ItemStack[]> craftingRecipes = new HashMap<ItemStack, ItemStack[]>();
 
     public ReciPicImageGeneratorGui (GuiConfig parentScreen) {
         this.parentScreen = parentScreen;
@@ -44,6 +63,19 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
 
         case generateImagesButtonID:
             areImagesGenerating = !areImagesGenerating;
+            craftingRecipes.clear();
+            craftingRecipes.putAll(RecipeWranglerManager.getWrangledRecipes());
+
+            if (minecraftRecipesDir.exists()) {
+                try {
+                    FileUtils.deleteDirectory(minecraftRecipesDir);
+                } catch (final IOException e) {
+                    System.out.println("Could not delete previously generated recipes folder!");
+                    e.printStackTrace();
+                }
+            }
+
+            imageGenerationProgress = 0;
             initGui();
             break;
 
@@ -63,12 +95,17 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
         drawCenteredString(fontRendererObj, title, width / 2, 8, 16777215);
 
         if (areImagesGenerating) {
-            drawCenteredString(fontRendererObj, "Not implemented yet!", (width / 2), (height / 3), 16777215);
-            drawCenteredString(fontRendererObj, ("Mod development progress: " + " " + imageGenerationProgress + "%"), (width / 2), (height / 3) + (fontRendererObj.FONT_HEIGHT * 2), 16777215);
-            imageGenerationProgress++;
+            drawCenteredString(fontRendererObj, "Generating recipe images...", (width / 2), (height / 3), 16777215);
+            drawCenteredString(fontRendererObj, ("Mod development progress: " + " " + ((int)(((float) imageGenerationProgress / (float) craftingRecipes.size()) * 100)) + "%"), (width / 2), (height / 3) + (fontRendererObj.FONT_HEIGHT * 2), 16777215);
 
-            if (imageGenerationProgress > 99) {
-                imageGenerationProgress = -100;
+            for (int i = 0; (imageGenerationProgress < craftingRecipes.size()) && (i < imageBatchSize); i++) {
+                craftingRecipeImageRenderer.drawAndSaveCraftingRecipe((ItemStack) craftingRecipes.keySet().toArray()[imageGenerationProgress], (ItemStack[]) craftingRecipes.values().toArray()[imageGenerationProgress]);
+                imageGenerationProgress++;
+            }
+
+            if (imageGenerationProgress == craftingRecipes.size()) {
+                areImagesGenerating = false;
+                initGui();
             }
         }
 
