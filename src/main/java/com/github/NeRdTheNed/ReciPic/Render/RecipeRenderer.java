@@ -59,6 +59,7 @@ public abstract class RecipeRenderer {
 
     protected static void drawItemStackAtLocation(int x, int y, ItemStack stack) {
         if (stack != null) {
+            GL11.glColorMask(true, true, true, false);
             itemRenderRef.renderItemAndEffectIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
             itemRenderRef.renderItemOverlayIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
         }
@@ -133,7 +134,7 @@ public abstract class RecipeRenderer {
         final int bitsPerPixel = 4;
         minecraftRecipesDir.mkdir();
         final File outputFile = new File(minecraftRecipesDir + "/" + output.getUnlocalizedName() + ".png");
-        final Framebuffer framebuffer = new Framebuffer(getDimension().getWidth() * scale, getDimension().getHeight() * scale, false);
+        final Framebuffer framebuffer = new Framebuffer(getDimension().getWidth() * scale, getDimension().getHeight() * scale, true);
         final int width = framebuffer.framebufferWidth;
         final int height = framebuffer.framebufferHeight;
         framebuffer.bindFramebuffer(false);
