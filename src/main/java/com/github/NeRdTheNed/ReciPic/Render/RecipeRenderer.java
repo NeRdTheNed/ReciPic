@@ -59,7 +59,6 @@ public abstract class RecipeRenderer {
 
     protected static void drawItemStackAtLocation(int x, int y, ItemStack stack) {
         if (stack != null) {
-            GL11.glColorMask(true, true, true, false);
             itemRenderRef.renderItemAndEffectIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
             itemRenderRef.renderItemOverlayIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
         }
@@ -134,10 +133,10 @@ public abstract class RecipeRenderer {
         final int bitsPerPixel = 4;
         minecraftRecipesDir.mkdir();
         final File outputFile = new File(minecraftRecipesDir + "/" + output.getUnlocalizedName() + ".png");
-        final Framebuffer framebuffer = new Framebuffer(getDimension().getWidth() * scale, getDimension().getHeight() * scale, true);
-        final int width = framebuffer.framebufferWidth;
-        final int height = framebuffer.framebufferHeight;
-        framebuffer.bindFramebuffer(false);
+        final int width = getDimension().getWidth() * scale;
+        final int height = getDimension().getHeight() * scale;
+        final Framebuffer recipeBackground = new Framebuffer(width, height, true);
+        final Framebuffer recipeOverlay = new Framebuffer(width, height, true);
         // See classes referencing the Framebuffer class
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
@@ -147,10 +146,21 @@ public abstract class RecipeRenderer {
         GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
         GL11.glViewport(0, 0, width, height);
         GL11.glScalef(scale, scale, scale);
-        // Draw recipe image
-        drawCraftingRecipe(0, 0, output, inputStacks);
+        // Draw background into framebuffer
+        recipeBackground.framebufferClear();
+        recipeBackground.bindFramebuffer(false);
+        drawRecipeBackgroud(0, 0);
+        recipeBackground.unbindFramebuffer();
+        // Draw recipe overlay into framebuffer
+        recipeOverlay.bindFramebuffer(false);
+        drawRecipeOverlay(0, 0, output, inputStacks);
+        recipeOverlay.unbindFramebuffer();
+        // Draw recipe overlay ontop of backgroud framebuffer
+        recipeBackground.bindFramebuffer(false);
+        recipeOverlay.framebufferRender(width, height);
+        // Save image
         final ByteBuffer recipeImageBuffer = ByteBuffer.allocateDirect(width * height * bitsPerPixel).order(ByteOrder.nativeOrder());
-        framebuffer.bindFramebufferTexture();
+        recipeBackground.bindFramebufferTexture();
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, recipeImageBuffer);
         final BufferedImage renderedRecipeImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
@@ -177,8 +187,8 @@ public abstract class RecipeRenderer {
         }
 
         // TODO see if there's a better way to do this
-        framebuffer.unbindFramebuffer();
-        framebuffer.unbindFramebufferTexture();
+        recipeBackground.deleteFramebuffer();
+        recipeOverlay.deleteFramebuffer();
         // See classes referencing the Framebuffer class
         Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(false);
         GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -192,7 +202,9 @@ public abstract class RecipeRenderer {
         GL11.glViewport(0, 0, Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
     }
 
-    public abstract void drawCraftingRecipe(int x, int y, ItemStack output, ItemStack[] inputStacks);
+    public abstract void drawRecipeBackgroud(int x, int y);
+
+    public abstract void drawRecipeOverlay(int x, int y, ItemStack output, ItemStack[] inputStacks);
 
     protected abstract Dimension getDimension();
 

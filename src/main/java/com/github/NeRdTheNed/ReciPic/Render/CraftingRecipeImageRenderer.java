@@ -24,11 +24,15 @@ public final class CraftingRecipeImageRenderer extends RecipeRenderer {
     private final static ResourceLocation craftingTableResourceLocation = new ResourceLocation("textures/gui/container/crafting_table.png");
 
     @Override
-    public void drawCraftingRecipe(int x, int y, ItemStack output, ItemStack[] inputStacks) {
+    public void drawRecipeBackgroud(int x, int y) {
         // Draw crafting table background
         drawBackgroundImage(x, y, craftingImageWidth, craftingImageHeight, craftingTableResourceLocation);
         // Draw a grey box over the "player inventory slots" portion of the image
         Gui.drawRect(x + 7, y + 83, x + 169, y + 159, 0xFFC6C6C6);
+    }
+
+    @Override
+    public void drawRecipeOverlay(int x, int y, ItemStack output, ItemStack[] inputStacks) {
         // Draw items on top of crafting grid
         RenderHelper.enableGUIStandardItemLighting();
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);

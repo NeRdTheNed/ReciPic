@@ -125,7 +125,8 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
         final int adjustedX = (width / 2) - (craftingImageWidth / 2);
         final int adjustedY = (height / 2) - (craftingImageHeight / 2);
         // TODO This is highly dubious
-        craftingRecipeImageRenderer.drawCraftingRecipe(adjustedX, adjustedY, (ItemStack) testCraftingRecipes.keySet().toArray()[recipeIndex], (ItemStack[]) testCraftingRecipes.values().toArray()[recipeIndex]);
+        craftingRecipeImageRenderer.drawRecipeBackgroud(adjustedX, adjustedY);
+        craftingRecipeImageRenderer.drawRecipeOverlay(adjustedX, adjustedY, (ItemStack) testCraftingRecipes.keySet().toArray()[recipeIndex], (ItemStack[]) testCraftingRecipes.values().toArray()[recipeIndex]);
         drawCenteredString(fontRendererObj, "Not fully implemented yet!", (width / 2), (craftingImageHeight + (fontRendererObj.FONT_HEIGHT / 2)), 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
