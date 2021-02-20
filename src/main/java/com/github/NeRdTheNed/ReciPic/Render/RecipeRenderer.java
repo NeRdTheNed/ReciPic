@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.Dimension;
 
 import net.minecraft.client.Minecraft;
@@ -26,6 +27,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.item.ItemStack;
@@ -59,6 +61,8 @@ public abstract class RecipeRenderer {
 
     protected static void drawItemStackAtLocation(int x, int y, ItemStack stack) {
         if (stack != null) {
+            // Temporary hack to disable item glint overlays
+            GL11.glDepthMask(false);
             itemRenderRef.renderItemAndEffectIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
             itemRenderRef.renderItemOverlayIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
         }
@@ -145,6 +149,8 @@ public abstract class RecipeRenderer {
         GL11.glLoadIdentity();
         GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
         GL11.glViewport(0, 0, width, height);
+        // Push matrix so that the viewport can be "descaled" later
+        GL11.glPushMatrix();
         GL11.glScalef(scale, scale, scale);
         // Draw background into framebuffer
         recipeBackground.framebufferClear();
@@ -155,10 +161,26 @@ public abstract class RecipeRenderer {
         recipeOverlay.bindFramebuffer(false);
         drawRecipeOverlay(0, 0, output, inputStacks);
         recipeOverlay.unbindFramebuffer();
-        // Draw recipe overlay ontop of backgroud framebuffer
+        // Draw recipe overlay on top of background framebuffer
         recipeBackground.bindFramebuffer(false);
-        recipeOverlay.framebufferRender(width, height);
-        // Save image
+        // For some reason, this only works if the viewport isn't scaled
+        GL11.glPopMatrix();
+        GL11.glEnable(GL11.GL_BLEND);
+        // TODO Find a way to blend better - item glint overlays are currently "disabled" through some hacks, as they are rendering fully transparent! See if it's possible to either fix that or create a blend function that ignores that.
+        GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        recipeOverlay.bindFramebufferTexture();
+        final Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.addVertexWithUV(0.0D, height, 0.0D, 0.0D, 0.0D);
+        tessellator.addVertexWithUV(width, height, 0.0D, 1.0D, 0.0D);
+        tessellator.addVertexWithUV(width, 0.0D, 0.0D, 1.0D, 1.0D);
+        tessellator.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
+        tessellator.draw();
+        recipeOverlay.unbindFramebufferTexture();
+        GL11.glDepthMask(true);
+        GL11.glDisable(GL11.GL_BLEND);
+        // Save background framebuffer to image
         final ByteBuffer recipeImageBuffer = ByteBuffer.allocateDirect(width * height * bitsPerPixel).order(ByteOrder.nativeOrder());
         recipeBackground.bindFramebufferTexture();
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, recipeImageBuffer);
