@@ -1,10 +1,5 @@
 package com.github.NeRdTheNed.ReciPic.Render;
 
-import static org.lwjgl.opengl.GL11.GL_RGBA;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
-import static org.lwjgl.opengl.GL11.glGetTexImage;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -61,9 +56,15 @@ public abstract class RecipeRenderer {
 
     protected static void drawItemStackAtLocation(int x, int y, ItemStack stack) {
         if (stack != null) {
-            // Temporary hack to disable item glint overlays
-            GL11.glDepthMask(false);
-            itemRenderRef.renderItemAndEffectIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
+            itemRenderRef.renderItemIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
+
+            // TODO Find better way to render glint effect
+            if (stack.hasEffect(0)) {
+                GL11.glColorMask(true, true, true, false);
+                itemRenderRef.renderEffect(mineCraft.getTextureManager(), x, y);
+                GL11.glColorMask(true, true, true, true);
+            }
+
             itemRenderRef.renderItemOverlayIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
         }
     }
@@ -183,7 +184,7 @@ public abstract class RecipeRenderer {
         // Save background framebuffer to image
         final ByteBuffer recipeImageBuffer = ByteBuffer.allocateDirect(width * height * bitsPerPixel).order(ByteOrder.nativeOrder());
         recipeBackground.bindFramebufferTexture();
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, recipeImageBuffer);
+        GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, recipeImageBuffer);
         final BufferedImage renderedRecipeImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
         // TODO this is inefficient
