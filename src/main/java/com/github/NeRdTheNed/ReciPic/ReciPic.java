@@ -29,8 +29,11 @@ public final class ReciPic implements IModGuiFactory {
     public static final Item wildcardItem = new WildcardItem();
 
     public static void syncConfig() {
-        displaySingleOreDictEntries = config.get(Configuration.CATEGORY_GENERAL, "ReciPic.displaySingleOreDictEntries", false).getBoolean();
-        config.save();
+        if (config.hasChanged()) {
+            displaySingleOreDictEntries = config.get(Configuration.CATEGORY_GENERAL, "ReciPic.displaySingleOreDictEntries", false).getBoolean();
+            RecipeWranglerManager.wrangleAllRecipes();
+            config.save();
+        }
     }
 
     @SubscribeEvent
