@@ -36,6 +36,8 @@ public abstract class RecipeRenderer {
     protected final static FontRenderer fontRendererRef = mineCraft.fontRenderer;
 
     protected final static int itemSize = 18;
+    /** :/ This magic number aligns the item descriptions with the crafting grid. */
+    private final static int magicOffsetNumber = 3;
 
     private final static File minecraftRecipesDir = new File(Minecraft.getMinecraft().mcDataDir, "recipes");
 
@@ -49,7 +51,7 @@ public abstract class RecipeRenderer {
         for (final ItemStack stack : stacks) {
             if (stack != null) {
                 drawItemStackAtLocationWithGLBoilerplate(x, y + (itemSize / 4), stack);
-                y += drawStringWrapped(x + itemSize, y, width - itemSize, stack.getDisplayName()) + fontRendererRef.FONT_HEIGHT;
+                y += drawStringWrapped(x + (itemSize + magicOffsetNumber), y, width - (itemSize + magicOffsetNumber), stack.getDisplayName()) + fontRendererRef.FONT_HEIGHT;
             }
         }
     }
