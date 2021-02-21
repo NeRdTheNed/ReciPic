@@ -5,10 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
 
@@ -25,8 +24,10 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.oredict.OreDictionary;
 
 public abstract class RecipeRenderer {
 
@@ -47,18 +48,35 @@ public abstract class RecipeRenderer {
         guiRef.drawTexturedModalRect(x, y, 0, 0, width, height);
     }
 
-    private static void drawItemsAndText(int x, int y, int width, ItemStack[] stacks) {
-        for (final ItemStack stack : stacks) {
+    private static void drawItemsAndText(int x, int y, int width, TreeMap<String, ItemStack> stacks) {
+        for (final Entry<String, ItemStack> stack : stacks.entrySet()) {
             if (stack != null) {
-                drawItemStackAtLocationWithGLBoilerplate(x, y + (itemSize / 4), stack);
-                y += drawStringWrapped(x + (itemSize + magicOffsetNumber), y, width - (itemSize + magicOffsetNumber), stack.getDisplayName()) + fontRendererRef.FONT_HEIGHT;
+                drawItemStackAtLocationWithGLBoilerplate(x, y + (itemSize / 4), stack.getValue());
+                y += drawStringWrapped(x + (itemSize + magicOffsetNumber), y, width - (itemSize + magicOffsetNumber), stack.getKey()) + fontRendererRef.FONT_HEIGHT;
             }
         }
     }
 
     protected static void drawItemStackAtLocation(int x, int y, ItemStack stack) {
         if (stack != null) {
-            itemRenderRef.renderItemIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
+            final int damageVal = stack.getItemDamage();
+
+            if (damageVal == OreDictionary.WILDCARD_VALUE)  {
+                stack = stack.copy();
+                stack.setItemDamage(0);
+            }
+
+            /**
+             * Mods will occasionally throw Exceptions when rendering for reasons beyond my control.
+             * If possible, I'd like to fix these errors on my end, but until every mod ever has been tested, the dubious try-catch block remains.
+             */
+            try {
+                itemRenderRef.renderItemIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
+            } catch (final Exception e) {
+                System.out.println("Error when rendering item:");
+                e.printStackTrace();
+                // TODO Create "error icon" to render if an item cannot be rendered
+            }
 
             // TODO Find better way to render glint effect
             if (stack.hasEffect(0)) {
@@ -96,29 +114,37 @@ public abstract class RecipeRenderer {
 
     /** TODO This is pure garbage, fix later. */
     protected static void sortAndDrawItemsAndText(int x, int y, int width, ItemStack[] stacks) {
-        final HashMap<String, ItemStack> items = new HashMap<String, ItemStack>();
+        final TreeMap<String, ItemStack> items = new TreeMap<String, ItemStack>(String.CASE_INSENSITIVE_ORDER);
 
         for (final ItemStack stack : stacks) {
-            if ((stack != null) && !items.containsKey(stack.getDisplayName())) {
-                items.put(stack.getDisplayName(), stack);
-            } /* else {
+            // Some mods throw exceptions when trying to retrieve the name of certain items. I don't know why.
+            if (stack != null) {
+                String itemName;
 
-            	ItemStack thisProbablyWillNotBeAnIssue = items.get(stack.getDisplayName());
-            	if (!ItemStack.areItemStacksEqual(stack, thisProbablyWillNotBeAnIssue)) {
-            		// ???
-            	}
-            } */
+                try {
+                    itemName = stack.getDisplayName();
+                } catch (final Exception e2) {
+                    System.out.println("Error when trying to retrive display name of item.");
+                    e2.printStackTrace();
+                    System.out.println("Using unlocalized name instead.");
+
+                    try {
+                        itemName = stack.getUnlocalizedName();
+                    } catch (final Exception e3) { // :/
+                        System.out.println("Error when trying to retrive the unlocatlized name of item.");
+                        e3.printStackTrace();
+                        itemName = "Item ID " + Item.getIdFromItem(stack.getItem()) + " with damage value " + stack.getItemDamage();
+                        System.out.println("Using item description instead.");
+                    }
+                }
+
+                if (!items.containsKey(itemName)) {
+                    items.put(itemName, stack);
+                }
+            }
         }
 
-        final ArrayList<String> itemNames = new ArrayList<String>(items.keySet());
-        Collections.sort(itemNames, String.CASE_INSENSITIVE_ORDER);
-        final ItemStack[] sortedStacks = new ItemStack[itemNames.size()];
-
-        for (int i = 0; i < itemNames.size(); i++) {
-            sortedStacks[i] = items.get(itemNames.get(i));
-        }
-
-        drawItemsAndText(x, y, width, sortedStacks);
+        drawItemsAndText(x, y, width, items);
     }
 
     /** TODO There is likely a much better way to do this, but I don't know OpenGL very well. References for future use:
