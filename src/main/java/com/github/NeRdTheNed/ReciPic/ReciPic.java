@@ -2,6 +2,8 @@ package com.github.NeRdTheNed.ReciPic;
 
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
+
 import com.github.NeRdTheNed.ReciPic.gui.ReciPicConfigGui;
 
 import cpw.mods.fml.client.IModGuiFactory;
@@ -25,6 +27,7 @@ public final class ReciPic implements IModGuiFactory {
     public static boolean displaySingleOreDictEntries;
 
     public static final String MOD_ID = "ReciPic";
+    public static Logger ReciPicLog;
 
     public static final Item wildcardItem = new WildcardItem();
 
@@ -50,6 +53,7 @@ public final class ReciPic implements IModGuiFactory {
 
     @EventHandler
     public void init(FMLPreInitializationEvent event) {
+        ReciPicLog = event.getModLog();
         config = new Configuration(event.getSuggestedConfigurationFile());
         syncConfig();
         FMLCommonHandler.instance().bus().register(this);

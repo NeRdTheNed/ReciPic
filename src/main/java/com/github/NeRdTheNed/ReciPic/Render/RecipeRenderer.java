@@ -16,6 +16,8 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.Dimension;
 
+import com.github.NeRdTheNed.ReciPic.ReciPic;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -23,6 +25,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -41,6 +44,9 @@ public abstract class RecipeRenderer {
     private final static int magicOffsetNumber = 3;
 
     private final static File minecraftRecipesDir = new File(Minecraft.getMinecraft().mcDataDir, "recipes");
+
+    public static String itemIDLocalised = I18n.format("ReciPic.recipeGeneration.fallbackItemName.id") + " ";
+    public static String itemDamageLocalised = " " + I18n.format("ReciPic.recipeGeneration.fallbackItemName.damage") + " ";
 
     protected static void drawBackgroundImage(int x, int y, int width, int height, ResourceLocation image) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -73,7 +79,7 @@ public abstract class RecipeRenderer {
             try {
                 itemRenderRef.renderItemIntoGUI(fontRendererRef, mineCraft.getTextureManager(), stack, x, y);
             } catch (final Exception e) {
-                System.out.println("Error when rendering item:");
+                ReciPic.ReciPicLog.error("Error when rendering item:");
                 e.printStackTrace();
                 // TODO Create "error icon" to render if an item cannot be rendered
             }
@@ -124,17 +130,15 @@ public abstract class RecipeRenderer {
                 try {
                     itemName = stack.getDisplayName();
                 } catch (final Exception e2) {
-                    System.out.println("Error when trying to retrive display name of item.");
+                    ReciPic.ReciPicLog.error("Error when trying to retrive display name of item, using unlocalized name instead.");
                     e2.printStackTrace();
-                    System.out.println("Using unlocalized name instead.");
 
                     try {
                         itemName = stack.getUnlocalizedName();
                     } catch (final Exception e3) { // :/
-                        System.out.println("Error when trying to retrive the unlocatlized name of item.");
+                        itemName = itemIDLocalised + Item.getIdFromItem(stack.getItem()) + itemDamageLocalised + stack.getItemDamage();
+                        ReciPic.ReciPicLog.error("Error when trying to retrive the unlocatlized name of item, using item description (" + itemName + ") instead.");
                         e3.printStackTrace();
-                        itemName = "Item ID " + Item.getIdFromItem(stack.getItem()) + " with damage value " + stack.getItemDamage();
-                        System.out.println("Using item description instead.");
                     }
                 }
 
@@ -233,7 +237,7 @@ public abstract class RecipeRenderer {
         try {
             ImageIO.write(renderedRecipeImage, "PNG", outputFile);
         } catch (final IOException e) {
-            System.out.println("Error writing recipe image: ");
+            ReciPic.ReciPicLog.error("Error writing recipe image: ");
             e.printStackTrace();
         }
 

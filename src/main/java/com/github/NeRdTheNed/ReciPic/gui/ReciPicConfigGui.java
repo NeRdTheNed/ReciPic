@@ -15,8 +15,11 @@ public final class ReciPicConfigGui extends GuiConfig {
 
     private final static int makeRecipeImagesButtonID = 0;
 
+    private final String makeRecipeImagesLocalised;
+
     public ReciPicConfigGui(GuiScreen g) {
-        super(g, new ConfigElement<ConfigCategory>(ReciPic.config.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements(), ReciPic.MOD_ID, false, false, ReciPic.MOD_ID + " Config");
+        super(g, new ConfigElement<ConfigCategory>(ReciPic.config.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements(), ReciPic.MOD_ID, false, false, I18n.format("ReciPic.gui.configGuiName"));
+        makeRecipeImagesLocalised = I18n.format("ReciPic.gui.enterMakeRecipeImages");
     }
 
     @Override
@@ -34,7 +37,6 @@ public final class ReciPicConfigGui extends GuiConfig {
     @Override
     public void initGui() {
         super.initGui();
-        final String makeRecipeImagesLocalised = I18n.format("ReciPic.config.enterMakeRecipeImages");
         final int makeRecipeImagesLocalisedWidth = Math.max(mc.fontRenderer.getStringWidth(makeRecipeImagesLocalised) + 20, 100);
         buttonList.add(new GuiButtonExt(makeRecipeImagesButtonID, (width / 2) - (makeRecipeImagesLocalisedWidth / 2), height - 60, makeRecipeImagesLocalisedWidth, 20, makeRecipeImagesLocalised));
     }

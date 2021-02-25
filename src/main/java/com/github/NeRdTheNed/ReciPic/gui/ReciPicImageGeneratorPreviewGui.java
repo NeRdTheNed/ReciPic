@@ -71,7 +71,7 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
     private final static int leftButtonID = 1;
     private final static int rightButtonID = 2;
 
-    private final static String title = "ReciPic Image Generator Preview";
+    private final String guiNameLocalised;
 
     final String backButtonLocalised;
 
@@ -82,6 +82,7 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
 
     public ReciPicImageGeneratorPreviewGui (ReciPicImageGeneratorGui parentScreen) {
         this.parentScreen = parentScreen;
+        guiNameLocalised = I18n.format("ReciPic.gui.imageGeneratorGuiNamePreview");
         backButtonLocalised = I18n.format("gui.done");
         // Temporary testing
         makeTestRecipes();
@@ -121,7 +122,7 @@ public class ReciPicImageGeneratorPreviewGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
-        drawCenteredString(fontRendererObj, title, width / 2, 8, 16777215);
+        drawCenteredString(fontRendererObj, guiNameLocalised, width / 2, 8, 16777215);
         final int adjustedX = (width / 2) - (craftingImageWidth / 2);
         final int adjustedY = (height / 2) - (craftingImageHeight / 2);
         // TODO This is highly dubious

@@ -6,8 +6,10 @@ import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 
+import com.github.NeRdTheNed.ReciPic.ReciPic;
 import com.github.NeRdTheNed.ReciPic.RecipeWranglerManager;
 import com.github.NeRdTheNed.ReciPic.Render.CraftingRecipeImageRenderer;
+import com.github.NeRdTheNed.ReciPic.Render.RecipeRenderer;
 
 import cpw.mods.fml.client.config.GuiButtonExt;
 import cpw.mods.fml.client.config.GuiConfig;
@@ -23,19 +25,20 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
     private final static int generateImagesButtonID = 1;
     private final static int previewRecipeImagesButtonID = 2;
 
-    private final static String title = "ReciPic Image Generator";
-
     private final static CraftingRecipeImageRenderer craftingRecipeImageRenderer = new CraftingRecipeImageRenderer();
 
     private final static File minecraftRecipesDir = new File(Minecraft.getMinecraft().mcDataDir, "recipes");
 
     private boolean areImagesGenerating = false;
 
-    final String backButtonLocalised;
-    final String cancelButtonLocalised;
-    final String generateImagesButtonLocalised;
+    private final String guiNameLocalised;
+    private final String backButtonLocalised;
+    private final String cancelButtonLocalised;
+    private final String generateImagesButtonLocalised;
+    private final String previewRecipeImagesButtonLocalised;
+    private final String generatingImagesLocalised;
+    private final String recipeGenerationProgressLocalised;
 
-    final String previewRecipeImagesButtonLocalised;
 
     private int imageGenerationProgress = 0;
     private final int imageBatchSize = 10;
@@ -46,10 +49,13 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
 
     public ReciPicImageGeneratorGui (GuiConfig parentScreen) {
         this.parentScreen = parentScreen;
+        guiNameLocalised = I18n.format("ReciPic.gui.imageGeneratorGuiName");
         backButtonLocalised = I18n.format("gui.done");
-        generateImagesButtonLocalised = I18n.format("ReciPic.config.makeRecipeImages");
+        generateImagesButtonLocalised = I18n.format("ReciPic.gui.makeRecipeImages");
         cancelButtonLocalised = I18n.format("gui.cancel");
-        previewRecipeImagesButtonLocalised = I18n.format("ReciPic.config.previewRecipeImages");
+        previewRecipeImagesButtonLocalised = I18n.format("ReciPic.gui.previewRecipeImages");
+        generatingImagesLocalised = I18n.format("ReciPic.gui.makingRecipeImages");
+        recipeGenerationProgressLocalised = I18n.format("ReciPic.gui.recipeGenerationProgress");
     }
 
     @Override
@@ -65,12 +71,14 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
             areImagesGenerating = !areImagesGenerating;
             craftingRecipes.clear();
             craftingRecipes.putAll(RecipeWranglerManager.getWrangledRecipes());
+            RecipeRenderer.itemDamageLocalised = I18n.format("ReciPic.recipeGeneration.fallbackItemName.damage");
+            RecipeRenderer.itemIDLocalised = I18n.format("ReciPic.recipeGeneration.fallbackItemName.id");
 
             if (minecraftRecipesDir.exists()) {
                 try {
                     FileUtils.deleteDirectory(minecraftRecipesDir);
                 } catch (final IOException e) {
-                    System.out.println("Could not delete previously generated recipes folder!");
+                    ReciPic.ReciPicLog.error("Could not delete previously generated recipes folder!");
                     e.printStackTrace();
                 }
             }
@@ -92,12 +100,12 @@ final class ReciPicImageGeneratorGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
-        drawCenteredString(fontRendererObj, title, width / 2, 8, 16777215);
+        drawCenteredString(fontRendererObj, guiNameLocalised, width / 2, 8, 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         if (areImagesGenerating) {
-            drawCenteredString(fontRendererObj, "Generating recipe images...", (width / 2), (height / 3), 16777215);
-            drawCenteredString(fontRendererObj, ("Recipe generation progress: " + " " + ((int)(((float) imageGenerationProgress / (float) craftingRecipes.size()) * 100)) + "%"), (width / 2), (height / 3) + (fontRendererObj.FONT_HEIGHT * 2), 16777215);
+            drawCenteredString(fontRendererObj, generatingImagesLocalised, (width / 2), (height / 3), 16777215);
+            drawCenteredString(fontRendererObj, recipeGenerationProgressLocalised + " " + ((int)(((float) imageGenerationProgress / (float) craftingRecipes.size()) * 100)) + "%", (width / 2), (height / 3) + (fontRendererObj.FONT_HEIGHT * 2), 16777215);
 
             for (int i = 0; (imageGenerationProgress < craftingRecipes.size()) && (i < imageBatchSize); i++) {
                 craftingRecipeImageRenderer.drawAndSaveCraftingRecipe((ItemStack) craftingRecipes.keySet().toArray()[imageGenerationProgress], (ItemStack[]) craftingRecipes.values().toArray()[imageGenerationProgress], 4);

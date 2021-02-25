@@ -54,12 +54,12 @@ public class RecipeWranglerManager {
         final HashMap<ItemStack, ItemStack[]> recipesToPrint = getWrangledRecipes();
 
         for (final ItemStack stack : recipesToPrint.keySet()) {
-            System.out.println("- " + stack);
-            System.out.println("    - " + Arrays.asList(recipesToPrint.get(stack)));
+            ReciPic.ReciPicLog.debug("- " + stack);
+            ReciPic.ReciPicLog.debug("    - " + Arrays.asList(recipesToPrint.get(stack)));
         }
 
         // TODO: Possibly remove duplicates somehow? HashMultimap won't work, as it can't check for object level equality (arrays are only equal if they reference the same array)
-        System.out.println("Contained total recipes for items: " + recipesToPrint.size());
+        ReciPic.ReciPicLog.debug("Contained total recipes for items: " + recipesToPrint.size());
     }
 
     public static void resetWranglersToDefault() {

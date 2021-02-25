@@ -5,7 +5,21 @@ item.ReciPic.WildcardItem.name=?
 ReciPic.displaySingleOreDictEntries.tooltip=Show "Any type of (item)" on OreDictionary item groups with only a single entry.
 ReciPic.displaySingleOreDictEntries=Show single OreDictionary entries.
 
+# Titles of GUI screens
+ReciPic.gui.configGuiName=ReciPic Config
+ReciPic.gui.imageGeneratorGuiName=ReciPic Image Generator
+ReciPic.gui.imageGeneratorGuiNamePreview=ReciPic Image Generator Preview
+
 # GUI buttons
-ReciPic.config.previewRecipeImages=Preview example recipes
-ReciPic.config.enterMakeRecipeImages=Enter recipe image generation menu
-ReciPic.config.makeRecipeImages=Generate recipe images
+ReciPic.gui.previewRecipeImages=Preview example recipes
+ReciPic.gui.enterMakeRecipeImages=Enter recipe image generation menu
+ReciPic.gui.makeRecipeImages=Generate recipe images
+
+# GUI strings
+
+ReciPic.gui.makingRecipeImages=Generating recipe images...
+ReciPic.gui.recipeGenerationProgress=Recipe generation progress:
+
+# Fallback strings used as part of a placeholder name when no name can be retrieved for an item.
+ReciPic.recipeGeneration.fallbackItemName.id=Item ID
+ReciPic.recipeGeneration.fallbackItemName.damage=with damage value

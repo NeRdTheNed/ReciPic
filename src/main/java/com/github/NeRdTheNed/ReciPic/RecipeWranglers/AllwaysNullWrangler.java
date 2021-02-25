@@ -1,5 +1,7 @@
 package com.github.NeRdTheNed.ReciPic.RecipeWranglers;
 
+import com.github.NeRdTheNed.ReciPic.ReciPic;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 
@@ -8,7 +10,7 @@ public class AllwaysNullWrangler extends AbstractRecipeWrangler {
 
     @Override
     public ItemStack[] wrangleRecipeType(IRecipe input) {
-        System.out.println("concern");
+        ReciPic.ReciPicLog.debug("concern");
         return null;
     }
 
