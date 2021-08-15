@@ -69,6 +69,11 @@ tasks.withType(JavaCompile).configureEach {
 }
 */
 
+// TODO Remove once the above is fixed
+
+sourceCompatibility = 6
+targetCompatibility = 6
+
 version = project.mod_version
 group = project.mod_group
 
