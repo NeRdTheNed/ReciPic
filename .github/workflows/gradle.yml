@@ -15,42 +15,30 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
-    - name: Set up JDK 6
-      id: setup_jdk_6
-      uses: actions/setup-java@v1
+      uses: actions/checkout@v3
+    - name: Set up JDK 6 & 8
+      uses: actions/setup-java@v3
       with:
-        java-version: 6
-    - name: Set up JDK 8
-      id: setup_jdk_8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 8
+        distribution: 'zulu'
+        java-version: |
+          6
+          8
     - name: Install advancecomp
       run: sudo apt-get install advancecomp
     - name: Install strip-nondeterminism
       run: sudo apt-get install strip-nondeterminism
-    - name: Print Java enviromental variables for debugging purposes.
-      run: |
-        set | grep JAVA
-        echo JDK 6 installated path should be ${{ steps.setup_jdk_6.outputs.path }}
     - name: Build with Gradle
-      env:
-        GITHUB_ACTIONS_JDK_6: ${{ steps.setup_jdk_6.outputs.path }}
-      uses: eskatos/gradle-command-action@v1
+      uses: gradle/gradle-build-action@v2
       with:
         gradle-version: wrapper
-        wrapper-cache-enabled: true
-        dependencies-cache-enabled: true
-        configuration-cache-enabled: true
-        arguments: SetupCIWorkspace build
+        cache-read-only: ${{ github.ref != 'refs/heads/forge-1.7.10' }}
+        arguments: SetupCIWorkspace build --stacktrace --warning-mode all
     - name: Run strip-nondeterminism on built .jar files
       run: strip-nondeterminism build/libs/*.jar
     - name: Run advzip (-i 999) on built .jar files
       run: advzip --shrink-insane -kzi 999 -p build/libs/*.jar
     - name: Upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Package
         path: build/libs
-
